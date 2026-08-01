@@ -85,6 +85,9 @@
    <attribute name="toolBarBreak">
     <bool>false</bool>
    </attribute>
+   <addaction name="actionLine"/>
+   <addaction name="actionRectangle"/>
+   <addaction name="actionEillpse"/>
   </widget>
   <action name="actionNew">
    <property name="text">
@@ -111,7 +114,57 @@
     <string>Quit</string>
    </property>
   </action>
+  <action name="actionLine">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="spriteeditor.qrc">
+     <normaloff>:/icons/layer-shape-polyline.png</normaloff>:/icons/layer-shape-polyline.png</iconset>
+   </property>
+   <property name="text">
+    <string>Line</string>
+   </property>
+   <property name="toolTip">
+    <string>Draw Line</string>
+   </property>
+   <property name="menuRole">
+    <enum>QAction::MenuRole::NoRole</enum>
+   </property>
+  </action>
+  <action name="actionRectangle">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="spriteeditor.qrc">
+     <normaloff>:/icons/layer-shape.png</normaloff>:/icons/layer-shape.png</iconset>
+   </property>
+   <property name="text">
+    <string>Rectangle</string>
+   </property>
+   <property name="menuRole">
+    <enum>QAction::MenuRole::NoRole</enum>
+   </property>
+  </action>
+  <action name="actionEillpse">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset>
+     <normaloff>:/res/icons/layer-shape-ellipse.png</normaloff>:/res/icons/layer-shape-ellipse.png</iconset>
+   </property>
+   <property name="text">
+    <string>Eillpse</string>
+   </property>
+   <property name="menuRole">
+    <enum>QAction::MenuRole::NoRole</enum>
+   </property>
+  </action>
  </widget>
- <resources/>
+ <resources>
+  <include location="spriteeditor.qrc"/>
+ </resources>
  <connections/>
 </ui>

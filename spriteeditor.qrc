@@ -1,0 +1,8 @@
+<RCC>
+  <qresource prefix="/">
+    <file>icons/border-draw.png</file>
+    <file>icons/layer-shape-ellipse.png</file>
+    <file>icons/layer-shape-polyline.png</file>
+    <file>icons/layer-shape.png</file>
+  </qresource>
+</RCC>

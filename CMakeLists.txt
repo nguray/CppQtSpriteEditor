@@ -5,6 +5,9 @@ find_package(Qt6 6.5 REQUIRED COMPONENTS Core Widgets)
 
 qt_standard_project_setup()
 
+set(RESOURCE_FILES spriteeditor.qrc)
+QT_ADD_RESOURCES(PROJECT_RESOURCES ${RESOURCE_FILES})
+
 qt_add_executable(SpriteEditor
     WIN32 MACOSX_BUNDLE
     main.cpp
@@ -13,6 +16,7 @@ qt_add_executable(SpriteEditor
     mainwindow.ui
     editarea.cpp
     editarea.h
+    ${PROJECT_RESOURCES}
 )
 
 target_link_libraries(SpriteEditor
