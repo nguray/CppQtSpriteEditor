@@ -17,14 +17,18 @@ class MainWindow : public QMainWindow
 public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
+    void update_toolbar(QAction *selAction);
 
 private slots:
-    //void on_btnOk_Clicked();
-    //void on_btnCancel_Clicked();
+    void on_actionLineTrigger();
+    void on_actionRectangleTrigger();
+    void on_actionEllipseTrigger();
 
 private:
     Ui::MainWindow *ui;
     EditArea *editarea;
+    int nbToolbarActions = 0;
+    QAction *toolbarActions[8];
 
 };
 #endif // MAINWINDOW_H

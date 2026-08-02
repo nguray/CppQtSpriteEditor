@@ -87,7 +87,7 @@
    </attribute>
    <addaction name="actionLine"/>
    <addaction name="actionRectangle"/>
-   <addaction name="actionEillpse"/>
+   <addaction name="actionEllipse"/>
   </widget>
   <action name="actionNew">
    <property name="text">
@@ -147,16 +147,16 @@
     <enum>QAction::MenuRole::NoRole</enum>
    </property>
   </action>
-  <action name="actionEillpse">
+  <action name="actionEllipse">
    <property name="checkable">
     <bool>true</bool>
    </property>
    <property name="icon">
-    <iconset>
-     <normaloff>:/res/icons/layer-shape-ellipse.png</normaloff>:/res/icons/layer-shape-ellipse.png</iconset>
+    <iconset resource="spriteeditor.qrc">
+     <normaloff>:/icons/layer-shape-ellipse.png</normaloff>:/icons/layer-shape-ellipse.png</iconset>
    </property>
    <property name="text">
-    <string>Eillpse</string>
+    <string>Ellipse</string>
    </property>
    <property name="menuRole">
     <enum>QAction::MenuRole::NoRole</enum>
@@ -166,5 +166,22 @@
  <resources>
   <include location="spriteeditor.qrc"/>
  </resources>
- <connections/>
+ <connections>
+  <connection>
+   <sender>actionQuit</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>close()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>399</x>
+     <y>299</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
 </ui>

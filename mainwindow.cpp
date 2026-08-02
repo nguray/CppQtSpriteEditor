@@ -6,8 +6,15 @@ MainWindow::MainWindow(QWidget *parent)
     , ui(new Ui::MainWindow),  editarea(new EditArea(this))
 {
     ui->setupUi(this);
-    //connect(ui->btnOk, SIGNAL(clicked()),this,SLOT(on_btnOk_Clicked()));
-    //onnect(ui->btnCancel, SIGNAL(clicked()),this,SLOT(on_btnCancel_Clicked()));
+    connect(ui->actionLine, SIGNAL(triggered()),this,SLOT(on_actionLineTrigger()));
+    connect(ui->actionRectangle, SIGNAL(triggered()),this,SLOT(on_actionRectangleTrigger()));
+    connect(ui->actionEllipse, SIGNAL(triggered()),this,SLOT(on_actionEllipseTrigger()));
+
+
+    nbToolbarActions = 0;
+    toolbarActions[nbToolbarActions++] = ui->actionLine;
+    toolbarActions[nbToolbarActions++] = ui->actionRectangle;
+    toolbarActions[nbToolbarActions++] = ui->actionEllipse;
 
     ui->centralwidget->setLayout(ui->verticalLayout0);
 
@@ -23,12 +30,38 @@ MainWindow::~MainWindow()
     delete editarea;
 }
 
-// void MainWindow::on_btnOk_Clicked()
-// {
-//     qDebug() << "Ok button clicked";
-// }
+void MainWindow::update_toolbar(QAction *selAction)
+{
+    QAction *a;
+    for(int i=0;i<nbToolbarActions;i++){
+        if ((a=toolbarActions[i]) && (a!=selAction)){
+            a->setDisabled(false);
+            a->setChecked(false);
+        }
+    }
+    selAction->setDisabled(true);
+}
 
-// void MainWindow::on_btnCancel_Clicked()
-// {
-//     qDebug() << "Cancel button clicked";
-// }
+void MainWindow::on_actionLineTrigger()
+{
+    update_toolbar(ui->actionLine);
+
+    qDebug() << "Draw Line mode";
+
+}
+
+void MainWindow::on_actionRectangleTrigger()
+{
+    update_toolbar(ui->actionRectangle);
+
+    qDebug() << "Draw Rectangle mode";
+
+}
+
+void MainWindow::on_actionEllipseTrigger()
+{
+    update_toolbar(ui->actionEllipse);
+
+    qDebug() << "Draw Ellipse mode";
+
+}
