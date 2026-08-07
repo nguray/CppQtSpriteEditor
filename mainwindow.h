@@ -3,6 +3,7 @@
 
 #include <QMainWindow>
 #include "editarea.h"
+#include "palette.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -27,6 +28,7 @@ private slots:
 private:
     Ui::MainWindow *ui;
     EditArea *editarea;
+    Palette  *palette;
     int nbToolbarActions = 0;
     QAction *toolbarActions[8];
 

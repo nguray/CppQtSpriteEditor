@@ -28,12 +28,14 @@ private:
     void resizeImage(QImage *image, const QSize &newSize);
     void drawGrid(QPainter *painter);
     QPoint Pos2Pixel(QPoint p);
+    void drawPixels(QPainter *painter);
  
 
     bool modified = false;
     bool scribbling = false;
     int myPenWidth = 1;
 
+    int margin = 4; 
     int cellSize = 10;
 
     QColor myPenColor = Qt::blue;

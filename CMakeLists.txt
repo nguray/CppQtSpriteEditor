@@ -16,6 +16,10 @@ qt_add_executable(SpriteEditor
     mainwindow.ui
     editarea.cpp
     editarea.h
+    colorrect.cpp
+    colorrect.h
+    palette.cpp
+    palette.h
     ${PROJECT_RESOURCES}
 )
 

@@ -3,7 +3,9 @@
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
-    , ui(new Ui::MainWindow),  editarea(new EditArea(this))
+    , ui(new Ui::MainWindow)
+    , editarea(new EditArea(this))
+    , palette (new Palette(this))
 {
     ui->setupUi(this);
     connect(ui->actionLine, SIGNAL(triggered()),this,SLOT(on_actionLineTrigger()));
@@ -20,7 +22,9 @@ MainWindow::MainWindow(QWidget *parent)
 
     QVBoxLayout *layout = ui->verticalLayout0;
     layout->addWidget(editarea,0);
+    layout->addWidget(palette,0);
     editarea->show();
+    palette->show();
 
 }
 
@@ -41,6 +45,7 @@ void MainWindow::update_toolbar(QAction *selAction)
     }
     selAction->setDisabled(true);
 }
+
 
 void MainWindow::on_actionLineTrigger()
 {
