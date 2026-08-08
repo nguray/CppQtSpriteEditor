@@ -3,6 +3,7 @@
 
 #include <QRect>
 #include <QColor>
+#include <QPainter>
 
 class ColorRect : public QRect
 {
@@ -16,8 +17,11 @@ public:
     ColorRect(int x,int y,int s,QColor c);
     ~ColorRect();
 
-    void setColor(QColor c);
-    QColor getColor();
+    void    setColor(QColor c);
+    QColor  getColor();
+    void    draw(QPainter *p);
+    void    drawFill(QPainter *p);
+    void    drawEmpty(QPainter *p);
 
 };
 

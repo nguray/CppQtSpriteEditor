@@ -5,12 +5,18 @@ Palette::Palette(QWidget *parent)
 {
     setAttribute(Qt::WA_StaticContents);
     setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Fixed);
-    setMinimumHeight(30);   
+    setMinimumHeight(34);   
+
+
+    foreGroundColor = ColorRect(1,1,1.2*cellSize,QColor(0x80, 0x80, 0x80, 0xFF));
+    backGroundColor = ColorRect(1,1,2*cellSize,QColor(0x00, 0x00, 0x00, 0x00));
 
     //-- Fill colors table
     for (int i = 0; i < nbRows; i++) {
         for (int j = 0; j < nbColumns; j++) {
-            tblColors.push_back(new ColorRect());
+            int x = 2 + 2*cellSize + j*cellSize;
+            int y = 1 + i*cellSize;
+            tblColors.push_back(new ColorRect(x+1,y+1,cellSize-1,QColor(0,0,0,0)));
         }
     }
 
@@ -46,16 +52,40 @@ Palette::~Palette()
 
 }
 
+ColorRect *Palette::hitColors(QPoint p)
+{
+    for(auto r : tblColors){
+        if (r->contains(p)){
+            return r;
+        }
+    }
+    return NULL;
+}
+
 void Palette::mousePressEvent(QMouseEvent *event)
 {
+    QPoint p = event->position().toPoint();
+    if (event->button() == Qt::LeftButton){
+        if (auto cr = hitColors(p) ){
+            foreGroundColor.setColor(cr->getColor());
+            update();
+        }
+    }else if (event->button() == Qt::RightButton){
+        if (auto cr = hitColors(p) ){
+            backGroundColor.setColor(cr->getColor());
+            update();
+        }
+
+    }
 
 }
+
+
 
 void Palette::mouseMoveEvent(QMouseEvent *event)
 {
     if ((event->buttons() & Qt::LeftButton)){
-
-
+    //
     }
 }
 
@@ -82,8 +112,24 @@ void Palette::paintEvent(QPaintEvent *event)
     painter.setPen(QPen(myGridColor, 0.5, Qt::SolidLine, Qt::RoundCap,
                 Qt::RoundJoin));
 
-    painter.drawLine(QPoint(0,0), QPoint(width(),height()));    
-    painter.drawLine(QPoint(0,height()), QPoint(width(),0));    
+    backGroundColor.draw(&painter);
+    foreGroundColor.draw(&painter);
+    drawColors(&painter);
 
+}
+
+
+void Palette::drawColors(QPainter *painter)
+{
+    int ic = 0;
+    for (int i = 0; i < nbRows; i++) {
+        for (int j = 0; j < nbColumns; j++) {
+            if (ic<tblColors.size()){
+                auto cr = tblColors[ic];
+                cr->draw(painter);
+            }
+            ic++;
+        }
+    }
 
 }

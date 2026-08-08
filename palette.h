@@ -27,11 +27,18 @@ protected:
     void resizeEvent(QResizeEvent *event) override;    
 
 private:
+
+    ColorRect *hitColors(QPoint p);
+    void drawColors(QPainter *painter);
+
     QColor myGridColor = Qt::black;
 
-    int nbColumns = 8;
+    int nbColumns = 16;
     int nbRows = 2;
-    int cellSize = 12;
+    int cellSize = 16;
+
+    ColorRect   foreGroundColor;
+    ColorRect   backGroundColor;
 
     std::vector<ColorRect *> tblColors;
 
