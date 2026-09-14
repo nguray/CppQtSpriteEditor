@@ -15,6 +15,15 @@ class Palette : public QWidget
 
 public:
 
+    enum
+    {
+        RGB_R_MASK = 0xFF << 24,
+        RGB_G_MASK = 0xFF << 16,
+        RGB_B_MASK = 0xFF << 8,
+        RGB_A_MASK = 0xFF
+    };
+
+
     Palette(QWidget *parent = nullptr);
     ~Palette();
 
@@ -30,6 +39,14 @@ private:
 
     ColorRect *hitColors(QPoint p);
     void drawColors(QPainter *painter);
+
+    unsigned char getRGBAlpha(unsigned int rgb);
+    unsigned char getRGBRed(unsigned int rgb);
+    unsigned char getRGBGreen(unsigned int rgb);
+    unsigned char getRGBBlue(unsigned int rgb);
+    unsigned int  RGBA(unsigned char r,unsigned char g,unsigned char b,unsigned char a);
+    void save(std::string pathName, std::string fileName);
+    bool load(std::string pathName, std::string fileName);
 
     QColor myGridColor = Qt::black;
 

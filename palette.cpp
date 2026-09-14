@@ -1,4 +1,6 @@
 #include "palette.h"
+#include <iostream>
+#include <fstream>
 
 Palette::Palette(QWidget *parent)
     : QWidget(parent)
@@ -58,6 +60,7 @@ ColorRect *Palette::hitColors(QPoint p)
         if (r->contains(p)){
             return r;
         }
+
     }
     return NULL;
 }
@@ -79,7 +82,6 @@ void Palette::mousePressEvent(QMouseEvent *event)
     }
 
 }
-
 
 
 void Palette::mouseMoveEvent(QMouseEvent *event)
@@ -132,4 +134,107 @@ void Palette::drawColors(QPainter *painter)
         }
     }
 
+}
+
+unsigned char Palette::getRGBAlpha(unsigned int rgb) {
+  //-----------------------------------------------------------
+  return (rgb & RGB_A_MASK);
+}
+
+unsigned char Palette::getRGBRed(unsigned int rgb) {
+  //-----------------------------------------------------------
+  return (rgb & RGB_R_MASK) >> 24;
+}
+
+unsigned char Palette::getRGBGreen(unsigned int rgb) {
+  //-----------------------------------------------------------
+  return (rgb & RGB_G_MASK) >> 16;
+}
+
+unsigned char Palette::getRGBBlue(unsigned int rgb) {
+  //-----------------------------------------------------------
+  return (rgb & RGB_B_MASK) >> 8;
+}
+
+unsigned int Palette::RGBA(unsigned char r, unsigned char g, unsigned char b,
+                             unsigned char a) {
+  //-----------------------------------------------------------
+  return (b << 8) | (g << 16) | (r << 24) | (a);
+}
+
+void Palette::save(std::string pathName, std::string fileName) {
+  std::string fullPathName;
+  //-------------------------------------------------
+  if (pathName != "") {
+    fullPathName = pathName + "/" + fileName;
+  } else {
+    fullPathName = fileName;
+  }
+  std::ofstream f(fullPathName);
+  if (f.is_open()) {
+    //--
+    QColor qc;
+    unsigned int ic;
+    qc = foreGroundColor.getColor();
+    ic = RGBA(qc.red(), qc.green(), qc.blue(), qc.alpha());
+    f << "FOREGROUND " << ic << std::endl;
+    //--
+    qc = backGroundColor.getColor();
+    ic = RGBA(qc.red(), qc.green(), qc.blue(), qc.alpha());
+    f << "BACKGROUND " << ic << std::endl;
+    //--
+    for (int i = 0; i < nbRows * nbColumns; i++) {
+      qc = tblColors[i]->getColor();
+      ic = RGBA(qc.red(), qc.green(), qc.blue(), qc.alpha());
+      f << ic << std::endl;
+    }
+    f.close();
+  }
+}
+
+bool Palette::load(std::string pathName, std::string fileName) {
+  unsigned int ic;
+  std::string strline;
+  std::string strWord;
+  std::string fullPathName;
+  //-------------------------------------------------
+  if (pathName != "") {
+    fullPathName = pathName + "/" + fileName;
+  } else {
+    fullPathName = fileName;
+  }
+
+  std::ifstream f(fullPathName);
+  if (f.is_open()) {
+    int i = 0;
+    //--
+    while (!f.eof()) {
+      std::getline(f, strline);
+      std::stringstream ss(strline);
+      ss >> strWord;
+      if (strWord == "FOREGROUND") {
+        ss >> strWord;
+        ic = std::atoi(strWord.c_str());
+        foreGroundColor.setColor(QColor(getRGBRed(ic), getRGBGreen(ic),
+                                       getRGBBlue(ic), getRGBAlpha(ic)));
+      } else if (strWord == "BACKGROUND") {
+        ss >> strWord;
+        ic = std::atoi(strWord.c_str());
+        backGroundColor.setColor(QColor(getRGBRed(ic), getRGBGreen(ic),
+                                       getRGBBlue(ic), getRGBAlpha(ic)));
+      } else {
+        ic = std::atoi(strWord.c_str());
+        if (i < nbRows * nbColumns) {
+          tblColors[i]->setColor(QColor(getRGBRed(ic), getRGBGreen(ic),
+                                      getRGBBlue(ic), getRGBAlpha(ic)));
+          i++;
+        } else {
+          break;
+        }
+      }
+    }
+    f.close();
+    return true;
+  }
+  return false;
 }
