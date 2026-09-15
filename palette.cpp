@@ -1,6 +1,7 @@
 #include "palette.h"
 #include <iostream>
 #include <fstream>
+#include <sstream>
 
 Palette::Palette(QWidget *parent)
     : QWidget(parent)
@@ -71,6 +72,7 @@ void Palette::mousePressEvent(QMouseEvent *event)
     if (event->button() == Qt::LeftButton){
         if (auto cr = hitColors(p) ){
             foreGroundColor.setColor(cr->getColor());
+            emit foreGroundColorChanged(cr->getColor());
             update();
         }
     }else if (event->button() == Qt::RightButton){

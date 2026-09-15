@@ -27,6 +27,9 @@ public:
     Palette(QWidget *parent = nullptr);
     ~Palette();
 
+signals:
+    void foreGroundColorChanged(QColor c);
+    void backGroundColorChanged(QColor c);
 
 protected:
     void mousePressEvent(QMouseEvent *event) override;

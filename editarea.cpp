@@ -6,77 +6,105 @@ EditArea::EditArea(QWidget *parent)
 {
     setAttribute(Qt::WA_StaticContents);
     
-    image = QImage(32, 32, QImage::Format_ARGB32);
-    image.fill(QColor(255, 0, 255));
+
+    EditMode::image = QImage(32, 32, QImage::Format_ARGB32);
+    EditMode::image.fill(QColor(0, 0, 0, 0));
 
 
-    QPainter painter(&image);
-    painter.setPen(QPen(myPenColor, myPenWidth, Qt::SolidLine, Qt::RoundCap,
+    pencilMode = new PencilMode();
+    curEditMode = pencilMode;
+
+
+    QPainter painter(&EditMode::image);
+    painter.setPen(QPen(EditMode::foregroundColor, myPenWidth, Qt::SolidLine, Qt::RoundCap,
                         Qt::RoundJoin));
     painter.drawLine(QPoint(0,0), QPoint(31,31));
+
 
 
 }
 
 void EditArea::drawPixels(QPainter *painter)
 {
-    int w = image.width();
-    int h = image.height();
-    int s = cellSize - 2;
+    int w = EditMode::image.width();
+    int h = EditMode::image.height();
+    int s = EditMode::cellSize - 2;
     for (int row = 0; row < h; row++)
     {
         for (int col = 0; col < w; col++)
         {
             
-            QColor c = image.pixel(col,row);
-            int x = margin + col*cellSize+1;
-            int y = margin + row*cellSize+1;
+            QColor c = EditMode::image.pixelColor(col,row);
 
-            painter->setBrush(QBrush(c));
-            painter->drawRect(x,y,s,s);
+            if (c.alpha()){
+                int x = EditMode::margin + col*EditMode::cellSize+1;
+                int y = EditMode::margin + row*EditMode::cellSize+1;
 
+                painter->setBrush(QBrush(c));
+                painter->setPen(QPen(c));
+                painter->drawRect(x,y,s,s);
+            }
         }
         
     }
     
 }
 
-QPoint EditArea::Pos2Pixel(QPoint p)
-{
-    int x = (p.x()-margin) / cellSize;
-    int y = (p.y()-margin) / cellSize;
-    return QPoint(x,y);
-}
-
-
 void EditArea::mousePressEvent(QMouseEvent *event)
 {
-    if (event->button() == Qt::LeftButton) {
-        auto pix = Pos2Pixel(event->position().toPoint());
 
-        if ((pix.x()>=0)&&(pix.x()<image.width())&&
-             (pix.y()>=0)&&(pix.y()<image.height())){
-            image.setPixelColor(pix.x(),pix.y(),myPenColor);
-            update();
-        }
-
-        scribbling = true;
-        qDebug() << pix.x() << "," << pix.y();
+    if (curEditMode->mousePressEvent(event)){
+        update();
     }
+
+    // if (event->button() == Qt::LeftButton) {
+    //     auto pix = Pos2Pixel(event->position().toPoint());
+
+    //     if ((pix.x()>=0)&&(pix.x()<image.width())&&
+    //          (pix.y()>=0)&&(pix.y()<image.height())){
+    //         image.setPixelColor(pix.x(),pix.y(),foregroundColor);
+    //         update();
+    //     }
+
+    //     scribbling = true;
+    //     qDebug() << pix.x() << "," << pix.y();
+
+    // }else if ((event->buttons() & Qt::RightButton) && scribbling){
+    //     auto pix = Pos2Pixel(event->position().toPoint());
+
+    //     if ((pix.x()>=0)&&(pix.x()<image.width())&&
+    //          (pix.y()>=0)&&(pix.y()<image.height())){
+    //         image.setPixelColor(pix.x(),pix.y(),backgroundColor);
+    //         update();
+    //     }
+    //     scribbling = true;
+    // }
 }
 
 void EditArea::mouseMoveEvent(QMouseEvent *event)
 {
-    if ((event->buttons() & Qt::LeftButton) && scribbling){
-        auto pix = Pos2Pixel(event->position().toPoint());
-
-        if ((pix.x()>=0)&&(pix.x()<image.width())&&
-             (pix.y()>=0)&&(pix.y()<image.height())){
-            image.setPixelColor(pix.x(),pix.y(),myPenColor);
-            update();
-        }
-
+    if (curEditMode->mouseMoveEvent(event)){
+        update();
     }
+    // if ((event->buttons() & Qt::LeftButton) && scribbling){
+    //     auto pix = Pos2Pixel(event->position().toPoint());
+
+    //     if ((pix.x()>=0)&&(pix.x()<image.width())&&
+    //          (pix.y()>=0)&&(pix.y()<image.height())){
+    //         image.setPixelColor(pix.x(),pix.y(),foregroundColor);
+    //         update();
+    //     }
+
+    // }else if ((event->buttons() & Qt::RightButton) && scribbling){
+    //     auto pix = Pos2Pixel(event->position().toPoint());
+
+    //     if ((pix.x()>=0)&&(pix.x()<image.width())&&
+    //          (pix.y()>=0)&&(pix.y()<image.height())){
+    //         image.setPixelColor(pix.x(),pix.y(),backgroundColor);
+    //         update();
+    //     }
+    // }
+
 }
 
 void EditArea::mouseReleaseEvent(QMouseEvent *event)
@@ -102,14 +130,14 @@ void EditArea::resizeEvent(QResizeEvent *event)
 void EditArea::drawGrid(QPainter *painter)
 {
     int x,y;
-    int xLeft = margin;
-    int yTop = margin;
+    int xLeft = EditMode::margin;
+    int yTop = EditMode::margin;
     painter->setPen(QPen(myGridColor, 0.2, Qt::SolidLine, Qt::RoundCap,
                 Qt::RoundJoin));
-    for (int i=0;i<=image.height();i++){
-        for (int j=0;j<=image.width();j++){
-            x = xLeft + j * cellSize;
-            y = yTop + i * cellSize;
+    for (int i=0;i<=EditMode::image.height();i++){
+        for (int j=0;j<=EditMode::image.width();j++){
+            x = xLeft + j * EditMode::cellSize;
+            y = yTop + i * EditMode::cellSize;
 
             //painter->drawRect(QRect(x+1,y+1,3,3));
             //painter->drawPoint(QPoint(x,y));
@@ -129,22 +157,22 @@ void EditArea::paintEvent(QPaintEvent *event)
     if (minDim>r.width()){
         minDim = r.width();
     }
-    cellSize = (minDim-4) / image.width();
+    EditMode::cellSize = (minDim-4) / EditMode::image.width();
 
-    painter.fillRect(r,QColor(200,200,200));
+    painter.fillRect(r,QColor(220,200,220));
 
     drawGrid(&painter);
 
     drawPixels(&painter);
 
-    painter.drawImage(QRect(image.width()*cellSize+10,4,32,32), image, QRect(0,0,32,32));
+    painter.drawImage(QRect(EditMode::image.width()*EditMode::cellSize+10,4,32,32), EditMode::image, QRect(0,0,32,32));
 
 }
 
 void EditArea::drawLineTo(const QPoint &endPoint)
 {
-    QPainter painter(&image);
-    painter.setPen(QPen(myPenColor, myPenWidth, Qt::SolidLine, Qt::RoundCap,
+    QPainter painter(&EditMode::image);
+    painter.setPen(QPen(EditMode::foregroundColor, myPenWidth, Qt::SolidLine, Qt::RoundCap,
                         Qt::RoundJoin));
     painter.drawLine(lastPoint, endPoint);
     modified = true;
@@ -165,4 +193,12 @@ void EditArea::resizeImage(QImage *image, const QSize &newSize)
     QPainter painter(&newImage);
     painter.drawImage(QPoint(0, 0), *image);
     *image = newImage;
+}
+
+void EditArea::setForegroundColor(QColor newColor) {
+    EditMode::foregroundColor = newColor;
+}
+
+void EditArea::setBackgroundColor(QColor newColor) {
+    EditMode::backgroundColor = newColor;
 }

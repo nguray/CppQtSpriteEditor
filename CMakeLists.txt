@@ -20,6 +20,10 @@ qt_add_executable(SpriteEditor
     colorrect.h
     palette.cpp
     palette.h
+    editmode.h
+    editmode.cpp
+    pencilmode.cpp
+    pencilmode.h
     ${PROJECT_RESOURCES}
 )
 

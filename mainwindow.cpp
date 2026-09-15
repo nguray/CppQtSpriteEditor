@@ -26,6 +26,9 @@ MainWindow::MainWindow(QWidget *parent)
     editarea->show();
     palette->show();
 
+    connect(palette, &Palette::foreGroundColorChanged, editarea,
+          &EditArea::setForegroundColor);
+
 }
 
 MainWindow::~MainWindow()

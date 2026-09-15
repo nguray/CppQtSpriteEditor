@@ -7,6 +7,10 @@
 #include <QImage>
 #include <QPainter>
 
+#include "editmode.h"
+#include "pencilmode.h"
+
+
 class EditArea : public QWidget
 {
 
@@ -15,6 +19,10 @@ class EditArea : public QWidget
 public:
 
     EditArea(QWidget *parent = nullptr);
+
+public slots:
+    void setForegroundColor(QColor newColor);
+    void setBackgroundColor(QColor newColor);
 
 protected:
     void mousePressEvent(QMouseEvent *event) override;
@@ -27,21 +35,18 @@ private:
     void drawLineTo(const QPoint &endPoint);
     void resizeImage(QImage *image, const QSize &newSize);
     void drawGrid(QPainter *painter);
-    QPoint Pos2Pixel(QPoint p);
     void drawPixels(QPainter *painter);
  
 
     bool modified = false;
-    bool scribbling = false;
     int myPenWidth = 1;
 
-    int margin = 4; 
-    int cellSize = 10;
 
-    QColor myPenColor = Qt::blue;
     QColor myGridColor = Qt::black;
-    QImage image;
     QPoint lastPoint;
+
+    EditMode *curEditMode=NULL;
+    PencilMode *pencilMode;
 
 
 };
