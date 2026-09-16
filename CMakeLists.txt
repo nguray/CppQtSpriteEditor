@@ -22,9 +22,10 @@ qt_add_executable(SpriteEditor
     palette.h
     editmode.h
     editmode.cpp
-    pencilmode.cpp
-    pencilmode.h
     ${PROJECT_RESOURCES}
+    rectanglemode.h rectanglemode.cpp
+    pencilmode.h pencilmode.cpp
+    ellipsemode.h ellipsemode.cpp
 )
 
 target_link_libraries(SpriteEditor

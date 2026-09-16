@@ -26,3 +26,4 @@ QPoint EditMode::Pos2Pixel(QPoint p)
     int y = (p.y()-margin) / cellSize;
     return QPoint(x,y);
 }
+

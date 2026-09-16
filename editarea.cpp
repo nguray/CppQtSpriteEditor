@@ -12,15 +12,26 @@ EditArea::EditArea(QWidget *parent)
 
 
     pencilMode = new PencilMode();
-    curEditMode = pencilMode;
+    rectangleMode = new RectangleMode();
+    ellipseMode = new EllipseMode();
+
+    setPencilMode();
 
 
-    QPainter painter(&EditMode::image);
-    painter.setPen(QPen(EditMode::foregroundColor, myPenWidth, Qt::SolidLine, Qt::RoundCap,
-                        Qt::RoundJoin));
-    painter.drawLine(QPoint(0,0), QPoint(31,31));
+    // QPainter painter(&EditMode::image);
+    // painter.setPen(QPen(EditMode::foregroundColor, myPenWidth, Qt::SolidLine, Qt::RoundCap,
+    //                     Qt::RoundJoin));
+    // painter.drawLine(QPoint(0,0), QPoint(31,31));
 
 
+
+}
+
+EditArea::~EditArea()
+{
+    if (pencilMode) delete pencilMode;
+    if (rectangleMode) delete rectangleMode;
+    if (ellipseMode) delete ellipseMode;
 
 }
 
@@ -57,28 +68,6 @@ void EditArea::mousePressEvent(QMouseEvent *event)
         update();
     }
 
-    // if (event->button() == Qt::LeftButton) {
-    //     auto pix = Pos2Pixel(event->position().toPoint());
-
-    //     if ((pix.x()>=0)&&(pix.x()<image.width())&&
-    //          (pix.y()>=0)&&(pix.y()<image.height())){
-    //         image.setPixelColor(pix.x(),pix.y(),foregroundColor);
-    //         update();
-    //     }
-
-    //     scribbling = true;
-    //     qDebug() << pix.x() << "," << pix.y();
-
-    // }else if ((event->buttons() & Qt::RightButton) && scribbling){
-    //     auto pix = Pos2Pixel(event->position().toPoint());
-
-    //     if ((pix.x()>=0)&&(pix.x()<image.width())&&
-    //          (pix.y()>=0)&&(pix.y()<image.height())){
-    //         image.setPixelColor(pix.x(),pix.y(),backgroundColor);
-    //         update();
-    //     }
-    //     scribbling = true;
-    // }
 }
 
 void EditArea::mouseMoveEvent(QMouseEvent *event)
@@ -86,24 +75,6 @@ void EditArea::mouseMoveEvent(QMouseEvent *event)
     if (curEditMode->mouseMoveEvent(event)){
         update();
     }
-    // if ((event->buttons() & Qt::LeftButton) && scribbling){
-    //     auto pix = Pos2Pixel(event->position().toPoint());
-
-    //     if ((pix.x()>=0)&&(pix.x()<image.width())&&
-    //          (pix.y()>=0)&&(pix.y()<image.height())){
-    //         image.setPixelColor(pix.x(),pix.y(),foregroundColor);
-    //         update();
-    //     }
-
-    // }else if ((event->buttons() & Qt::RightButton) && scribbling){
-    //     auto pix = Pos2Pixel(event->position().toPoint());
-
-    //     if ((pix.x()>=0)&&(pix.x()<image.width())&&
-    //          (pix.y()>=0)&&(pix.y()<image.height())){
-    //         image.setPixelColor(pix.x(),pix.y(),backgroundColor);
-    //         update();
-    //     }
-    // }
 
 }
 
@@ -201,4 +172,19 @@ void EditArea::setForegroundColor(QColor newColor) {
 
 void EditArea::setBackgroundColor(QColor newColor) {
     EditMode::backgroundColor = newColor;
+}
+
+void EditArea::setPencilMode()
+{
+    curEditMode = pencilMode;
+}
+
+void EditArea::setRectangleMode()
+{
+    curEditMode = rectangleMode;
+}
+
+void EditArea::setEllipseMode()
+{
+    curEditMode = ellipseMode;
 }

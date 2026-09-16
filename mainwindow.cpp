@@ -55,6 +55,7 @@ void MainWindow::on_actionLineTrigger()
     update_toolbar(ui->actionLine);
 
     qDebug() << "Draw Line mode";
+    editarea->setPencilMode();
 
 }
 
@@ -63,6 +64,7 @@ void MainWindow::on_actionRectangleTrigger()
     update_toolbar(ui->actionRectangle);
 
     qDebug() << "Draw Rectangle mode";
+    editarea->setRectangleMode();
 
 }
 
@@ -71,5 +73,6 @@ void MainWindow::on_actionEllipseTrigger()
     update_toolbar(ui->actionEllipse);
 
     qDebug() << "Draw Ellipse mode";
+    editarea->setEllipseMode();
 
 }

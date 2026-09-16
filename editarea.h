@@ -9,6 +9,8 @@
 
 #include "editmode.h"
 #include "pencilmode.h"
+#include "rectanglemode.h"
+#include "ellipsemode.h"
 
 
 class EditArea : public QWidget
@@ -19,6 +21,12 @@ class EditArea : public QWidget
 public:
 
     EditArea(QWidget *parent = nullptr);
+    ~EditArea();
+
+    void setPencilMode();
+    void setRectangleMode();
+    void setEllipseMode();
+
 
 public slots:
     void setForegroundColor(QColor newColor);
@@ -46,7 +54,8 @@ private:
     QPoint lastPoint;
 
     EditMode *curEditMode=NULL;
-    PencilMode *pencilMode;
-
+    PencilMode      *pencilMode;
+    RectangleMode   *rectangleMode;
+    EllipseMode     *ellipseMode;
 
 };
