@@ -1,0 +1,50 @@
+{
+  "version": 3,
+  "configurePresets": [
+    {
+      "name": "linux-x64",
+      "displayName": "Linux x86_64",
+      "description": "Target Desktop Linux x86_64",
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/build/linux-x64",
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Linux"
+      },
+      "cacheVariables": {
+        "CMAKE_PREFIX_PATH": "~/Qt/6.11.2/gcc_64"
+      }
+    },
+    {
+      "name": "linux-arm64",
+      "displayName": "Linux ARM64",
+      "description": "Target Linux ARM64 (Native or Cross)",
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/build/linux-arm64",
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Linux"
+      },
+      "cacheVariables": {
+        "CMAKE_PREFIX_PATH": "~/Qt/6.11.2/gcc_arm64"
+      }
+    },
+    {
+      "name": "windows-mingw",
+      "displayName": "Windows MinGW",
+      "description": "Target Windows using MinGW",
+      "generator": "MinGW Makefiles",
+      "binaryDir": "${sourceDir}/build/windows-mingw",
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Windows"
+      },
+      "cacheVariables": {
+        "CMAKE_PREFIX_PATH": "C:/Qt/6.11.2/mingw_64"
+      }
+    }
+  ]
+}

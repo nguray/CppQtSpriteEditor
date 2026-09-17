@@ -17,9 +17,26 @@
             "configurationProvider": "ms-vscode.cmake-tools"
         },
         {
-            "name": "linux",
+            "name": "linux_arm",
             "includePath": [
-                "${workspaceFolder}/**"
+                "${workspaceFolder}/**",
+                "~/Qt/6.11.2/gcc_arm64/include/**"
+            ],
+            "defines": [
+                "_DEBUG",
+                "UNICODE",
+                "_UNICODE"
+            ],
+            "compilerPath": "/usr/bin/g++",
+            "cStandard": "c17",
+            "cppStandard": "c++20",
+            "intelliSenseMode": "linux-gcc-x64"
+        },
+        {
+            "name": "linux_x86_64",
+            "includePath": [
+                "${workspaceFolder}/**",
+                "~/Qt/6.11.2/gcc_x86_64/include/**"
             ],
             "defines": [
                 "_DEBUG",
@@ -31,6 +48,7 @@
             "cppStandard": "c++20",
             "intelliSenseMode": "linux-gcc-x64"
         }
+
     ],
     "version": 4
 }

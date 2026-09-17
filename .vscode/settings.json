@@ -73,6 +73,7 @@
         "variant": "cpp"
     },
 
-    "sarif-viewer.connectToGithubCodeScanning": "off"
+    "sarif-viewer.connectToGithubCodeScanning": "off",
+
 
 }
