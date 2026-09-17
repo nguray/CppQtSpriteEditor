@@ -17,7 +17,6 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->actionEllipse, SIGNAL(triggered()),
             this,SLOT(on_actionEllipseTrigger()));
 
-
     nbToolbarActions = 0;
     toolbarActions[nbToolbarActions++] = ui->actionLine;
     toolbarActions[nbToolbarActions++] = ui->actionRectangle;
