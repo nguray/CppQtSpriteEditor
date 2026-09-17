@@ -1,3 +1,4 @@
+
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
@@ -7,10 +8,14 @@ MainWindow::MainWindow(QWidget *parent)
     , editarea(new EditArea(this))
     , palette (new Palette(this))
 {
+
     ui->setupUi(this);
-    connect(ui->actionLine, SIGNAL(triggered()),this,SLOT(on_actionLineTrigger()));
-    connect(ui->actionRectangle, SIGNAL(triggered()),this,SLOT(on_actionRectangleTrigger()));
-    connect(ui->actionEllipse, SIGNAL(triggered()),this,SLOT(on_actionEllipseTrigger()));
+    connect(ui->actionLine, SIGNAL(triggered()),
+            this,SLOT(on_actionLineTrigger()));
+    connect(ui->actionRectangle, SIGNAL(triggered()),
+            this,SLOT(on_actionRectangleTrigger()));
+    connect(ui->actionEllipse, SIGNAL(triggered()),
+            this,SLOT(on_actionEllipseTrigger()));
 
 
     nbToolbarActions = 0;
