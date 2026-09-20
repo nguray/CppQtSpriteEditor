@@ -63,7 +63,7 @@ void EditArea::drawPixels(QPainter *painter)
 
 void EditArea::mousePressEvent(QMouseEvent *event)
 {
-
+    event->accept();
     if (curEditMode->mousePressEvent(event)){
         update();
     }
@@ -72,6 +72,7 @@ void EditArea::mousePressEvent(QMouseEvent *event)
 
 void EditArea::mouseMoveEvent(QMouseEvent *event)
 {
+    event->accept();
     if (curEditMode->mouseMoveEvent(event)){
         update();
     }
@@ -80,10 +81,11 @@ void EditArea::mouseMoveEvent(QMouseEvent *event)
 
 void EditArea::mouseReleaseEvent(QMouseEvent *event)
 {
-    // if (event->button() == Qt::LeftButton && scribbling) {
-    //     drawLineTo(event->position().toPoint());
-    //     scribbling = false;
-    // }
+    event->accept();
+    if (curEditMode->mouseReleaseEvent(event)){
+        update();
+    }
+
 }
 
 void EditArea::resizeEvent(QResizeEvent *event)
@@ -137,6 +139,9 @@ void EditArea::paintEvent(QPaintEvent *event)
     drawPixels(&painter);
 
     painter.drawImage(QRect(EditMode::image.width()*EditMode::cellSize+10,4,32,32), EditMode::image, QRect(0,0,32,32));
+
+
+    curEditMode->paintEvent(event);
 
 }
 
