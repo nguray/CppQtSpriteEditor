@@ -6,6 +6,7 @@ QColor EditMode::foregroundColor = Qt::blue;
 QColor EditMode::backgroundColor = QColor(0,0,0,0);
 QImage EditMode::image = QImage(32, 32, QImage::Format_ARGB32);
 
+bool EditMode::fShiftKey = false;
 int EditMode::margin = 4; 
 int EditMode::cellSize = 10;
 

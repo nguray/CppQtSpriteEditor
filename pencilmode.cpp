@@ -87,5 +87,14 @@ bool PencilMode::mouseReleaseEvent(QMouseEvent *event)
 
 void PencilMode::paintEvent(QPaintEvent *event)
 {
+    //if (QGuiApplication::keyboardModifiers().testFlag(Qt::ShiftModifier)) {
+        // Shift key is currently pressed
+     //}
+    if (fShiftKey){
+        qDebug() << "PencilMode PaintEvent ShiftKey pressed...";
+
+    }else{
+        qDebug() << "PencilMode PaintEvent ShiftKey not pressed...";
+    }
 
 }

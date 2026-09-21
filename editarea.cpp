@@ -5,6 +5,8 @@ EditArea::EditArea(QWidget *parent)
     : QWidget(parent)
 {
     setAttribute(Qt::WA_StaticContents);
+    // 1. Allow the widget to get focus by clicking or tabbing
+    setFocusPolicy(Qt::StrongFocus); 
     
 
     EditMode::image = QImage(32, 32, QImage::Format_ARGB32);
@@ -63,6 +65,7 @@ void EditArea::drawPixels(QPainter *painter)
 
 void EditArea::mousePressEvent(QMouseEvent *event)
 {
+    setFocus(Qt::MouseFocusReason);
     event->accept();
     if (curEditMode->mousePressEvent(event)){
         update();
@@ -72,6 +75,7 @@ void EditArea::mousePressEvent(QMouseEvent *event)
 
 void EditArea::mouseMoveEvent(QMouseEvent *event)
 {
+    setFocus(Qt::MouseFocusReason);
     event->accept();
     if (curEditMode->mouseMoveEvent(event)){
         update();
@@ -87,6 +91,31 @@ void EditArea::mouseReleaseEvent(QMouseEvent *event)
     }
 
 }
+
+void EditArea::keyPressEvent(QKeyEvent *event)
+{
+    //--
+    event->accept();
+    if (event->key()==Qt::Key_Shift){
+        EditMode::fShiftKey = true;
+        //qDebug() << "SHIFT Key Pressed Event";
+        update();
+    }
+    QWidget::keyPressEvent(event);
+
+}    
+
+void EditArea::keyReleaseEvent(QKeyEvent *event)
+{
+    //--
+    if (event->key()==Qt::Key_Shift){
+        EditMode::fShiftKey = false;
+        //qDebug() << "SHIFT Key Released Event";
+        update();
+    }
+    QWidget::keyReleaseEvent(event);
+
+}    
 
 void EditArea::resizeEvent(QResizeEvent *event)
 {
@@ -140,6 +169,7 @@ void EditArea::paintEvent(QPaintEvent *event)
 
     painter.drawImage(QRect(EditMode::image.width()*EditMode::cellSize+10,4,32,32), EditMode::image, QRect(0,0,32,32));
 
+    //qDebug() << "EditArea Paint Event";
 
     curEditMode->paintEvent(event);
 

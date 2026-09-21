@@ -18,6 +18,8 @@ public:
     static int margin; 
     static int cellSize;
 
+    static bool fShiftKey;
+
     QPoint Pos2Pixel(QPoint p);
 
 

@@ -74,6 +74,9 @@
     },
 
     "sarif-viewer.connectToGithubCodeScanning": "off",
-
+    "editor.cursorSmoothCaretAnimation": "off",
+    "editor.smoothScrolling": false,
+    "editor.guides.indentation": false,
+    "editor.quickSuggestionsDelay": 150
 
 }
