@@ -12,7 +12,7 @@ public:
     bool mousePressEvent(QMouseEvent *event);
     bool mouseMoveEvent(QMouseEvent *event);
     bool mouseReleaseEvent(QMouseEvent *event);
-    void paintEvent(QPaintEvent *event);
+    void paintEvent(QPaintEvent *event, QPainter *painter);
 
 
 };

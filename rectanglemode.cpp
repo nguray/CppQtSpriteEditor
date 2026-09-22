@@ -67,7 +67,7 @@ bool RectangleMode::mouseReleaseEvent(QMouseEvent *event)
     return false;
 }
 
-void RectangleMode::paintEvent(QPaintEvent *event)
+void RectangleMode::paintEvent(QPaintEvent *event, QPainter *painter)
 {
 
 }

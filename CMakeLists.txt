@@ -26,6 +26,7 @@ qt_add_executable(SpriteEditor
     rectanglemode.h rectanglemode.cpp
     pencilmode.h pencilmode.cpp
     ellipsemode.h ellipsemode.cpp
+    pixelrect.h pixelrect.cpp
 )
 
 target_link_libraries(SpriteEditor

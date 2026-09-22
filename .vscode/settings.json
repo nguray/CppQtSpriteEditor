@@ -77,6 +77,9 @@
     "editor.cursorSmoothCaretAnimation": "off",
     "editor.smoothScrolling": false,
     "editor.guides.indentation": false,
-    "editor.quickSuggestionsDelay": 150
+    "editor.quickSuggestionsDelay": 150,
+    "editor.minimap.enabled": false,
+    "disable-hardware-acceleration": true
+
 
 }

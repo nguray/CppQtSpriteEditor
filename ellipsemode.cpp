@@ -68,7 +68,7 @@ bool EllipseMode::mouseReleaseEvent(QMouseEvent *event)
     return false;
 }
 
-void EllipseMode::paintEvent(QPaintEvent *event)
+void EllipseMode::paintEvent(QPaintEvent *event, QPainter *painter)
 {
 
 }

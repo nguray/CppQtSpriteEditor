@@ -2,7 +2,8 @@
 #pragma once
 #include "editmode.h"
 #include <vector>
-#include "QPoint"
+#include <QPoint>
+#include "pixelrect.h"
 
 class PencilMode : public EditMode
 {
@@ -10,12 +11,20 @@ public:
     PencilMode();
     ~PencilMode();
 
+    PixelRect lastPixel;
+    PixelRect *selVertex=NULL;
+
+    void freePolygon();
+    void drawPolygon();
+    void drawPolygonVertices(QPainter *painter);
+    PixelRect *hitVertex(QPoint pt);
+
     bool mousePressEvent(QMouseEvent *event);
     bool mouseMoveEvent(QMouseEvent *event);
     bool mouseReleaseEvent(QMouseEvent *event);
-    void paintEvent(QPaintEvent *event);
+    void paintEvent(QPaintEvent *event, QPainter *painter);
 
 private:
-    std::vector<QPoint *> listPts;
+    std::vector<PixelRect *> polygon;
 
 };

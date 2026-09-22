@@ -6,12 +6,12 @@ EditArea::EditArea(QWidget *parent)
 {
     setAttribute(Qt::WA_StaticContents);
     // 1. Allow the widget to get focus by clicking or tabbing
-    setFocusPolicy(Qt::StrongFocus); 
+    setFocusPolicy(Qt::StrongFocus);
     
 
-    EditMode::image = QImage(32, 32, QImage::Format_ARGB32);
-    EditMode::image.fill(QColor(0, 0, 0, 0));
-
+    //EditMode::image = QImage(32, 32, QImage::Format_ARGB32);
+    EditMode::setImage(QSharedPointer<QImage>::create(32, 32, QImage::Format_ARGB32));
+    EditMode::image->fill(QColor(0, 0, 0, 0));
 
     pencilMode = new PencilMode();
     rectangleMode = new RectangleMode();
@@ -39,15 +39,15 @@ EditArea::~EditArea()
 
 void EditArea::drawPixels(QPainter *painter)
 {
-    int w = EditMode::image.width();
-    int h = EditMode::image.height();
+    int w = EditMode::image->size().width();
+    int h = EditMode::image->size().height();
     int s = EditMode::cellSize - 2;
     for (int row = 0; row < h; row++)
     {
         for (int col = 0; col < w; col++)
         {
             
-            QColor c = EditMode::image.pixelColor(col,row);
+            QColor c = EditMode::image->pixelColor(col,row);
 
             if (c.alpha()){
                 int x = EditMode::margin + col*EditMode::cellSize+1;
@@ -136,8 +136,8 @@ void EditArea::drawGrid(QPainter *painter)
     int yTop = EditMode::margin;
     painter->setPen(QPen(myGridColor, 0.2, Qt::SolidLine, Qt::RoundCap,
                 Qt::RoundJoin));
-    for (int i=0;i<=EditMode::image.height();i++){
-        for (int j=0;j<=EditMode::image.width();j++){
+    for (int i=0;i<=EditMode::image->size().height();i++){
+        for (int j=0;j<=EditMode::image->size().width();j++){
             x = xLeft + j * EditMode::cellSize;
             y = yTop + i * EditMode::cellSize;
 
@@ -159,7 +159,7 @@ void EditArea::paintEvent(QPaintEvent *event)
     if (minDim>r.width()){
         minDim = r.width();
     }
-    EditMode::cellSize = (minDim-4) / EditMode::image.width();
+    EditMode::cellSize = (minDim-4) / EditMode::image->size().width();
 
     painter.fillRect(r,QColor(220,200,220));
 
@@ -167,17 +167,19 @@ void EditArea::paintEvent(QPaintEvent *event)
 
     drawPixels(&painter);
 
-    painter.drawImage(QRect(EditMode::image.width()*EditMode::cellSize+10,4,32,32), EditMode::image, QRect(0,0,32,32));
+    painter.drawImage(QRect(EditMode::image->size().width()*EditMode::cellSize+10,4,32,32), *EditMode::image, QRect(0,0,32,32));
+
+    painter.drawImage(QRect(EditMode::image_bak.size().width()*EditMode::cellSize+10,64,32,32), EditMode::image_bak, QRect(0,0,32,32));
 
     //qDebug() << "EditArea Paint Event";
 
-    curEditMode->paintEvent(event);
+    curEditMode->paintEvent(event,&painter);
 
 }
 
 void EditArea::drawLineTo(const QPoint &endPoint)
 {
-    QPainter painter(&EditMode::image);
+    QPainter painter(EditMode::image.get());
     painter.setPen(QPen(EditMode::foregroundColor, myPenWidth, Qt::SolidLine, Qt::RoundCap,
                         Qt::RoundJoin));
     painter.drawLine(lastPoint, endPoint);
