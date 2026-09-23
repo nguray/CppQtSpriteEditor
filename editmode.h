@@ -1,4 +1,5 @@
 #pragma once
+#include <QPoint>
 #include <QColor>
 #include <QImage>
 #include <QPainter>
@@ -22,7 +23,10 @@ public:
     static bool fShiftKey;
 
     QPoint Pos2Pixel(QPoint p);
+
     QRect  Pixel2Rect(int px,int py);
+    QRect  Pixel2Rect(QPoint p);
+
     void   backupImage();
     void   restoreImage();
 

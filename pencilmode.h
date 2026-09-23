@@ -2,7 +2,6 @@
 #pragma once
 #include "editmode.h"
 #include <vector>
-#include <QPoint>
 #include "pixelrect.h"
 
 class PencilMode : public EditMode

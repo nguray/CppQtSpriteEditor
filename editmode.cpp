@@ -31,10 +31,16 @@ QPoint EditMode::Pos2Pixel(QPoint p)
 
 QRect EditMode::Pixel2Rect(int px,int py)
 {
-    int xLeft = px*cellSize + margin;
-    int yTop  = py*cellSize + margin;
+    return Pixel2Rect(QPoint(px,py));
+}
+
+QRect EditMode::Pixel2Rect(QPoint p)
+{
+    int xLeft = p.x()*cellSize + margin;
+    int yTop  = p.y()*cellSize + margin;
     return QRect(xLeft,yTop,cellSize,cellSize);
 }
+
 
 void EditMode::setImage(QSharedPointer<QImage> new_image)
 {

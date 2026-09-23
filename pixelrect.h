@@ -2,16 +2,16 @@
 #define PIXELRECT_H
 
 #include <QRect>
+#include <QPoint>
 
 class PixelRect : public QRect
 {
 public:
     PixelRect();
     PixelRect(PixelRect &pr);
-    PixelRect(int px,int py);
+    PixelRect(QPoint p);
     ~PixelRect();
-    int pix_x;
-    int pix_y;
+    QPoint pix;
 };
 
 #endif // PIXELRECT_H

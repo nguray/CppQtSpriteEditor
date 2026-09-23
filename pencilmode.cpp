@@ -2,9 +2,10 @@
 #include "pencilmode.h"
 
 
-PencilMode::PencilMode()
+PencilMode::PencilMode():
+    lastPixel(PixelRect())
 {
-    lastPixel = PixelRect();
+
 }
 
 PencilMode::~PencilMode()
@@ -25,8 +26,8 @@ void PencilMode::freePolygon()
 void PencilMode::drawPolygon()
 {
     bool fFirst = true;
-    int x,y;
-    int prev_x,prev_y;
+    QPoint cur;
+    QPoint prev;
 
     QPainter painter(EditMode::image.get());
     painter.setPen(QPen(EditMode::foregroundColor, 1.0, Qt::SolidLine, Qt::RoundCap,
@@ -35,15 +36,11 @@ void PencilMode::drawPolygon()
     for(auto v : polygon){
         if (fFirst){
             fFirst = false;
-            prev_x = v->pix_x;
-            prev_y = v->pix_y;
+            prev = v->pix;
         }else{
-            x = v->pix_x;
-            y = v->pix_y;
-            //qDebug() << "(" << prev_x << "," << prev_y << ") -> (" << x << "," << y << ") ";
-            painter.drawLine(QPoint(prev_x,prev_y), QPoint(x,y));
-            prev_x = x;
-            prev_y = y;
+            cur = v->pix;
+            painter.drawLine(prev, cur);
+            prev = cur;
         }
 
     }
@@ -66,49 +63,45 @@ bool PencilMode::mousePressEvent(QMouseEvent *event)
     if (event->button() == Qt::LeftButton) {
 
         auto pix = Pos2Pixel(event->position().toPoint());
-        QSize s = image->size();
+        QRect r = image->rect();
 
         if (event->modifiers() & Qt::ShiftModifier) {
 
             if (selVertex=hitVertex(event->position().toPoint())){
-                qDebug() << ">>> Hit Vertex " << polygon.size();
                 return false;
             }else{
 
-                if ((pix.x()>=0)&&(pix.x()<s.width())&&
-                    (pix.y()>=0)&&(pix.y()<s.height())){
+                if (r.contains(pix)){
 
                     if (polygon.size()==0){
                         backupImage();
-                        //-- Add lastPixel
+                        //-- Add starting vertex
                         polygon.push_back(new PixelRect(lastPixel));
                     }
 
-                    polygon.push_back(new PixelRect(pix.x(),pix.y()));
-
-                    //qDebug() << ">>> Nbre Vertice " << polygon.size();
+                    selVertex = new PixelRect(pix);
+                    polygon.push_back(selVertex);
 
                     // Draw polygon in curent image
                     drawPolygon();
 
-                    //qDebug() << pix.x() << "," << pix.y();
                     return true;
                 }
             }
 
         }else{
             freePolygon();
-            if ((pix.x()>=0)&&(pix.x()<s.width())&&
-                (pix.y()>=0)&&(pix.y()<s.height())){
-                image->setPixelColor(pix.x(),pix.y(),foregroundColor);
+            if (r.contains(pix)){
+                image->setPixelColor(pix,foregroundColor);
                 return true;
             }
         }
 
     }else if (event->button() == Qt::RightButton) {
+        // Validate polygon draw
         if (polygon.size()){
             auto v = polygon.back();
-            lastPixel = PixelRect(v->pix_x,v->pix_y);
+            lastPixel = PixelRect(v->pix);
             freePolygon();
         }
         return true;
@@ -126,26 +119,16 @@ bool PencilMode::mouseMoveEvent(QMouseEvent *event)
 
         if (fShiftKey){
             if (selVertex){
-                selVertex->pix_x = pix.x();
-                selVertex->pix_y = pix.y();
+                // Move selected vertex
+                selVertex->pix =  pix;
                 restoreImage();
                 drawPolygon();
                 return true;
-            }else{
-                if (polygon.size()){
-                    restoreImage();
-                    auto v = polygon.back();
-                    v->pix_x = pix.x();
-                    v->pix_y = pix.y();
-                    drawPolygon();
-                    return true;
-                }
             }
         }else{
-            QSize s = image->size();
-            if ((pix.x()>=0)&&(pix.x()<s.width())&&
-                 (pix.y()>=0)&&(pix.y()<s.height())){
-                image->setPixelColor(pix.x(),pix.y(),foregroundColor);
+            QRect r = image->rect();
+            if (r.contains(pix)){
+                image->setPixelColor(pix,foregroundColor);
                 return true;
             }
         }
@@ -158,18 +141,17 @@ bool PencilMode::mouseMoveEvent(QMouseEvent *event)
 
 bool PencilMode::mouseReleaseEvent(QMouseEvent *event)
 {
-    qDebug() << ">>> Hit Vertex " << polygon.size();
+
     if ((event->button() == Qt::LeftButton)){
         auto pix = Pos2Pixel(event->position().toPoint());
-        QSize s = image->size();
-        if ((pix.x()>=0)&&(pix.x()<s.width())&&
-            (pix.y()>=0)&&(pix.y()<s.height())){
+        QRect r = image->rect();
+        if (r.contains(pix)){
             if (fShiftKey){
                 if (selVertex){
                     selVertex = NULL;
                 }
             }else{
-                lastPixel = PixelRect(pix.x(),pix.y());
+                lastPixel = PixelRect(pix);
             }
             return true;
         }
@@ -183,7 +165,7 @@ void PencilMode::drawPolygonVertices(QPainter *painter)
     int xLeft,yTop;
     for (auto v : polygon){
 
-        auto r = Pixel2Rect(v->pix_x,v->pix_y);
+        auto r = Pixel2Rect(v->pix);
         v->setRect(r.left(),r.top(),cellSize,cellSize);
 
         painter->setPen(QPen(QColor(255,0,0,255), 1.0, Qt::SolidLine, Qt::RoundCap,
