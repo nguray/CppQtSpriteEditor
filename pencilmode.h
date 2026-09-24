@@ -18,6 +18,8 @@ public:
     void drawPolygonVertices(QPainter *painter);
     PixelRect *hitVertex(QPoint pt);
 
+    void toggleFlash();
+
     bool mousePressEvent(QMouseEvent *event);
     bool mouseMoveEvent(QMouseEvent *event);
     bool mouseReleaseEvent(QMouseEvent *event);
@@ -25,5 +27,9 @@ public:
 
 private:
     std::vector<PixelRect *> polygon;
+
+    QColor  vertexHandleColor1;
+    QColor  vertexHandleColor2;
+
 
 };

@@ -5,6 +5,8 @@
 PencilMode::PencilMode():
     lastPixel(PixelRect())
 {
+    vertexHandleColor1 = QColor(255,0,0,255);
+    vertexHandleColor2 = QColor(255,255,255,255);
 
 }
 
@@ -16,10 +18,20 @@ PencilMode::~PencilMode()
 
 void PencilMode::freePolygon()
 {
+    //--
     for (auto p:polygon){
         delete p;
     }
     polygon.clear();
+
+}
+
+void PencilMode::toggleFlash()
+{
+
+    QColor tmpColor = vertexHandleColor1;
+    vertexHandleColor1 = vertexHandleColor2;
+    vertexHandleColor2 = tmpColor;
 
 }
 
@@ -71,7 +83,7 @@ bool PencilMode::mousePressEvent(QMouseEvent *event)
                 return false;
             }else{
 
-                if (r.contains(pix)){
+                if (r.contains(pix)){ // Keep actions inside image limits
 
                     if (polygon.size()==0){
                         backupImage();
@@ -91,7 +103,8 @@ bool PencilMode::mousePressEvent(QMouseEvent *event)
 
         }else{
             freePolygon();
-            if (r.contains(pix)){
+            if (r.contains(pix)){ // Keep actions inside image limits
+                backupImage();
                 image->setPixelColor(pix,foregroundColor);
                 return true;
             }
@@ -116,23 +129,22 @@ bool PencilMode::mouseMoveEvent(QMouseEvent *event)
    if ((event->buttons() & Qt::LeftButton)){
 
         auto pix = Pos2Pixel(event->position().toPoint());
+        QRect r = image->rect();
 
-        if (fShiftKey){
-            if (selVertex){
-                // Move selected vertex
-                selVertex->pix =  pix;
-                restoreImage();
-                drawPolygon();
-                return true;
-            }
-        }else{
-            QRect r = image->rect();
-            if (r.contains(pix)){
+        if (r.contains(pix)){ // Keep movement inside image limits
+            if (fShiftKey){
+                if (selVertex){
+                    // Move selected vertex
+                    selVertex->pix =  pix;
+                    restoreImage();
+                    drawPolygon();
+                    return true;
+                }
+            }else{
                 image->setPixelColor(pix,foregroundColor);
                 return true;
             }
         }
-
 
     }
 
@@ -145,7 +157,7 @@ bool PencilMode::mouseReleaseEvent(QMouseEvent *event)
     if ((event->button() == Qt::LeftButton)){
         auto pix = Pos2Pixel(event->position().toPoint());
         QRect r = image->rect();
-        if (r.contains(pix)){
+        if (r.contains(pix)){ // Keep things inside image limits
             if (fShiftKey){
                 if (selVertex){
                     selVertex = NULL;
@@ -168,14 +180,16 @@ void PencilMode::drawPolygonVertices(QPainter *painter)
         auto r = Pixel2Rect(v->pix);
         v->setRect(r.left(),r.top(),cellSize,cellSize);
 
-        painter->setPen(QPen(QColor(255,0,0,255), 1.0, Qt::SolidLine, Qt::RoundCap,
+        painter->setBrush(QBrush(foregroundColor));
+
+        painter->setPen(QPen(vertexHandleColor1, 1.0, Qt::SolidLine, Qt::RoundCap,
                              Qt::RoundJoin));
         painter->drawRect(r);
 
-        QRect rect1(r.left()+2,r.top()+2,r.width()-4,r.height()-4);
-        painter->setPen(QPen(QColor(255,255,255,255), 1.0, Qt::SolidLine, Qt::RoundCap,
+        r.adjust(2,2,-2,-2);
+        painter->setPen(QPen(vertexHandleColor2, 1.0, Qt::SolidLine, Qt::RoundCap,
                              Qt::RoundJoin));
-        painter->drawRect(rect1);
+        painter->drawRect(r);
 
     }
 
@@ -186,26 +200,10 @@ void PencilMode::paintEvent(QPaintEvent *event, QPainter *painter)
     //if (QGuiApplication::keyboardModifiers().testFlag(Qt::ShiftModifier)) {
         // Shift key is currently pressed
     //}
+
     if (fShiftKey){
         drawPolygonVertices(painter);
 
     }
-
-    // if ((lastPixel.pix_x!=0)||(lastPixel.pix_y!=0)){
-
-    //     auto r = Pixel2Rect(lastPixel.pix_x,lastPixel.pix_y);
-    //     qDebug() << "Left : " << r.left() << ", Top : " << r.top();
-    //     lastPixel.setRect(r.left(),r.top(),r.width(),r.height());
-
-    //     painter->setPen(QPen(QColor(255,0,0,255), 1.0, Qt::SolidLine, Qt::RoundCap,
-    //                          Qt::RoundJoin));
-    //     painter->drawRect(lastPixel);
-
-    //     QRect rect = QRect(lastPixel.left()+2,lastPixel.top()+2,lastPixel.width()-4,lastPixel.height()-4);
-    //     painter->setPen(QPen(QColor(255,255,255,255), 1.0, Qt::SolidLine, Qt::RoundCap,
-    //                          Qt::RoundJoin));
-    //     painter->drawRect(rect);
-
-    // }
 
 }

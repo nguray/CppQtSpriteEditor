@@ -19,6 +19,8 @@ EditArea::EditArea(QWidget *parent)
 
     setPencilMode();
 
+    m_timer = new QTimer(this);
+    connect(m_timer, &QTimer::timeout, this, &EditArea::toggleFlash);
 
     // QPainter painter(&EditMode::image);
     // painter.setPen(QPen(EditMode::foregroundColor, myPenWidth, Qt::SolidLine, Qt::RoundCap,
@@ -35,6 +37,12 @@ EditArea::~EditArea()
     if (rectangleMode) delete rectangleMode;
     if (ellipseMode) delete ellipseMode;
 
+}
+
+void EditArea::toggleFlash()
+{
+    pencilMode->toggleFlash();
+    update();
 }
 
 void EditArea::drawPixels(QPainter *painter)
@@ -98,7 +106,7 @@ void EditArea::keyPressEvent(QKeyEvent *event)
     event->accept();
     if (event->key()==Qt::Key_Shift){
         EditMode::fShiftKey = true;
-        //qDebug() << "SHIFT Key Pressed Event";
+        m_timer->start(400); // Toggle every 400 milliseconds
         update();
     }
     QWidget::keyPressEvent(event);
@@ -110,7 +118,7 @@ void EditArea::keyReleaseEvent(QKeyEvent *event)
     //--
     if (event->key()==Qt::Key_Shift){
         EditMode::fShiftKey = false;
-        //qDebug() << "SHIFT Key Released Event";
+         m_timer->stop();
         update();
     }
     QWidget::keyReleaseEvent(event);

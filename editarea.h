@@ -6,6 +6,7 @@
 #include <QResizeEvent>
 #include <QImage>
 #include <QPainter>
+#include <QTimer>
 
 #include "editmode.h"
 #include "pencilmode.h"
@@ -31,6 +32,8 @@ public:
 public slots:
     void setForegroundColor(QColor newColor);
     void setBackgroundColor(QColor newColor);
+    void toggleFlash();
+
 
 protected:
     void mousePressEvent(QMouseEvent *event) override;
@@ -46,7 +49,9 @@ private:
     void resizeImage(QImage *image, const QSize &newSize);
     void drawGrid(QPainter *painter);
     void drawPixels(QPainter *painter);
- 
+
+
+    QTimer *m_timer;
 
     bool modified = false;
     int myPenWidth = 1;
