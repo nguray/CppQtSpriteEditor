@@ -17,13 +17,15 @@ public:
     void paintEvent(QPaintEvent *event, QPainter *painter);
 
 private:
+    CornerRect *selCorner=NULL;
     SelectRect  selectRect;
     bool fMoveSelectRect = false;
     QPoint c1;
     QPoint c2;
 
+    CornerRect *hitCorner(QPoint pt);
     void drawSelectRect(QPainter *painter);
-
+    void drawRectangle();
 
 };
 

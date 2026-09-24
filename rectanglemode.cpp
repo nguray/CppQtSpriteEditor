@@ -10,22 +10,41 @@ RectangleMode::~RectangleMode()
 
 }
 
+CornerRect *RectangleMode::hitCorner(QPoint pt)
+{
+    CornerRect *c;
+    for (auto i=0;i<4;i++){
+        if ((c=selectRect.corners[i]) && (c->contains(pt))){
+            return c;
+        }
+    }
+
+    return NULL;
+}
+
+
 bool RectangleMode::mousePressEvent(QMouseEvent *event)
 {
+
     if (event->button() == Qt::LeftButton) {
 
-        if (selectRect.contains(event->position().toPoint())){
-            auto pix = Pos2Pixel(event->position().toPoint());
-            c1 = pix;
 
+        QPoint pt = event->position().toPoint();
+        auto pix = Pos2Pixel(pt);
+
+        if (selCorner=hitCorner(pt)){
+            c1 = pix;
+            return false;
+        }else if (selectRect.contains(pt)){
+            c1 = pix;
             selectRect.BackupSubImageRect();
             fMoveSelectRect = true;
             return false;
         }else{
-            auto pix = Pos2Pixel(event->position().toPoint());
             QRect r = image->rect();
             if (r.contains(pix)){ // Keep actions inside image limits
                 if (selectRect.isNull()){
+                    backupImage();
                     selectRect.setSubImageRect(pix.x(),pix.y(),pix.x(),pix.y());
                     c1 = pix;
                     return true;
@@ -47,6 +66,18 @@ bool RectangleMode::mousePressEvent(QMouseEvent *event)
 
 }
 
+void RectangleMode::drawRectangle()
+{
+    QPainter painter(EditMode::image.get());
+    painter.setPen(QPen(EditMode::foregroundColor, 1.0, Qt::SolidLine, Qt::RoundCap,
+                        Qt::RoundJoin));
+    painter.drawRect(QRect(selectRect.subImageLeft,selectRect.subImageTop,
+                            selectRect.subImageRight-selectRect.subImageLeft,
+                            selectRect.subImageBottom-selectRect.subImageTop));
+}
+
+
+
 bool RectangleMode::mouseMoveEvent(QMouseEvent *event)
 {
 
@@ -54,7 +85,6 @@ bool RectangleMode::mouseMoveEvent(QMouseEvent *event)
 
         auto pix = Pos2Pixel(event->position().toPoint());
         QRect r = image->rect();
-
 
         if (fMoveSelectRect){
             if (c1!=pix){
@@ -66,7 +96,26 @@ bool RectangleMode::mouseMoveEvent(QMouseEvent *event)
                 int tBottom   = selectRect.subImageBottomBak + dy;
                 if (r.contains(QPoint(tLeft,tTop)) && r.contains(QPoint(tRight,tBottom))){
                     selectRect.setSubImageRect(tLeft,tTop,tRight,tBottom);
+                    restoreImage();
+                    drawRectangle();
                     return true;
+                }
+            }
+        }else if (selCorner){
+            if (r.contains(pix)){ // Keep actions inside image limits
+                int savX = *(selCorner->x);
+                int savY = *(selCorner->y);
+                *(selCorner->x) = pix.x();
+                *(selCorner->y) = pix.y();
+                if ((selectRect.subImageLeft<selectRect.subImageRight) &&
+                    (selectRect.subImageTop<selectRect.subImageBottom)){
+                    restoreImage();
+                    drawRectangle();
+                    return true;
+                }else{
+                    *(selCorner->x) = savX;
+                    *(selCorner->y) = savY;
+                    return false;
                 }
             }
         }else if (!selectRect.fDefined){
@@ -88,7 +137,8 @@ bool RectangleMode::mouseMoveEvent(QMouseEvent *event)
                     b = c1.y();
                 }
                 selectRect.setSubImageRect(l,t,r,b);
-
+                restoreImage();
+                drawRectangle();
                 return true;
             }
         }
@@ -103,8 +153,8 @@ bool RectangleMode::mouseReleaseEvent(QMouseEvent *event)
 {
     if ((event->button() == Qt::LeftButton)){
         fMoveSelectRect = false;
-        selectRect.fDefined = true;
-
+        selCorner = NULL;
+        selectRect.fDefined = !selectRect.isSubImageNULL();
     }
     return false;
 }
@@ -119,12 +169,13 @@ void RectangleMode::drawSelectRect(QPainter *painter)
     int yBottom = selectRect.subImageBottom*cellSize + margin + cellSize;
 
     selectRect.setRect(xLeft,yTop,xRight-xLeft,yBottom-yTop);
-    painter->setPen(QPen(QColor(255,0,0,255), 1.0, Qt::SolidLine, Qt::RoundCap,
+    painter->setBrush(Qt::NoBrush);
+    painter->setPen(QPen(QColor(0,0,64,64), 1.0, Qt::SolidLine, Qt::RoundCap,
                          Qt::RoundJoin));
     painter->drawRect(selectRect);
 
     //-- Draw corner handles
-    painter->setBrush(QBrush(QColor(255,0,0,255)));
+    painter->setBrush(QBrush(QColor(0,0,128,255)));
 
     //--TopLeft
     selectRect.corners[0]->setCoords(xLeft-5,yTop-5,xLeft+4,yTop+4);
