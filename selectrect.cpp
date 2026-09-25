@@ -2,10 +2,10 @@
 
 SelectRect::SelectRect()
 {
-    corners[0] = new CornerRect(&subImageLeft,&subImageTop);
-    corners[1] = new CornerRect(&subImageRight,&subImageTop);
-    corners[2] = new CornerRect(&subImageRight,&subImageBottom);
-    corners[3] = new CornerRect(&subImageLeft,&subImageBottom);
+    corners[0] = new CornerRect(&pixLeft,&pixTop);
+    corners[1] = new CornerRect(&pixRight,&pixTop);
+    corners[2] = new CornerRect(&pixRight,&pixBottom);
+    corners[3] = new CornerRect(&pixLeft,&pixBottom);
 
 }
 
@@ -18,41 +18,39 @@ SelectRect::~SelectRect()
     }
 }
 
-bool SelectRect::isSubImageNULL()
+bool SelectRect::isPixNULL()
 {
-    return ((subImageLeft==0) && (subImageTop==0) && (subImageLeft==subImageRight) && (subImageTop==subImageBottom));
+    return ((pixLeft==0) && (pixTop==0) && (pixLeft==pixRight) && (pixTop==pixBottom));
 }
 
-void SelectRect::setSubImageNULL()
+void SelectRect::setPixNULL()
 {
-    subImageLeft = 0;
-    subImageRight = 0;
-    subImageTop = 0;
-    subImageBottom = 0;
+    pixLeft = 0;
+    pixRight = 0;
+    pixTop = 0;
+    pixBottom = 0;
 }
 
 
-void SelectRect::setSubImageRect(int left,int top,int right,int bottom)
+QRect SelectRect::getPixRect()
 {
-    this->subImageLeft   = left;
-    this->subImageTop    = top;
-    this->subImageRight  = right;
-    this->subImageBottom = bottom;
+    return QRect(pixLeft,pixTop,pixRight-pixLeft,pixBottom-pixTop);
 }
 
-void SelectRect::BackupSubImageRect()
+
+void SelectRect::setPixLimits(int left,int top,int right,int bottom)
 {
-    subImageLeftBak   = subImageLeft;
-    subImageRightBak  = subImageRight;
-    subImageTopBak    = subImageTop;
-    subImageBottomBak = subImageBottom;
+    pixLeft   = left;
+    pixTop    = top;
+    pixRight  = right;
+    pixBottom = bottom;
 }
 
-void SelectRect::RestoreSubImageRect()
+void SelectRect::BackupPixLimits()
 {
-    subImageLeft   = subImageLeftBak;
-    subImageRight  = subImageRightBak;
-    subImageTop    = subImageTopBak;
-    subImageBottom = subImageBottomBak;
+     pixLeftBak    = pixLeft;
+     pixRightBak   = pixRight;
+     pixTopBak     = pixTop;
+     pixBottomBak = pixBottom;
 }
 

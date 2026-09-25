@@ -37,26 +37,32 @@ bool RectangleMode::mousePressEvent(QMouseEvent *event)
             return false;
         }else if (selectRect.contains(pt)){
             c1 = pix;
-            selectRect.BackupSubImageRect();
+            selectRect.BackupPixLimits();
             fMoveSelectRect = true;
             return false;
         }else{
             QRect r = image->rect();
             if (r.contains(pix)){ // Keep actions inside image limits
-                if (selectRect.isNull()){
+                if (!selectRect.fDefined){
                     backupImage();
-                    selectRect.setSubImageRect(pix.x(),pix.y(),pix.x(),pix.y());
+                    selectRect.setPixLimits(pix.x(),pix.y(),pix.x(),pix.y());
                     c1 = pix;
                     return true;
                 }else{
-
+                    backupImage();
+                    selectRect.setPixNULL();
+                    selectRect.setRect(0,0,0,0);
+                    selectRect.fDefined = false;
+                    selectRect.setPixLimits(pix.x(),pix.y(),pix.x(),pix.y());
+                    c1 = pix;
+                    return true;
                 }
 
             }
         }
     }else if (event->button() == Qt::RightButton) {
 
-        selectRect.setSubImageNULL();
+        selectRect.setPixNULL();
         selectRect.setRect(0,0,0,0);
         selectRect.fDefined = false;
         return true;
@@ -71,9 +77,7 @@ void RectangleMode::drawRectangle()
     QPainter painter(EditMode::image.get());
     painter.setPen(QPen(EditMode::foregroundColor, 1.0, Qt::SolidLine, Qt::RoundCap,
                         Qt::RoundJoin));
-    painter.drawRect(QRect(selectRect.subImageLeft,selectRect.subImageTop,
-                            selectRect.subImageRight-selectRect.subImageLeft,
-                            selectRect.subImageBottom-selectRect.subImageTop));
+    painter.drawRect(selectRect.getPixRect());
 }
 
 
@@ -90,12 +94,12 @@ bool RectangleMode::mouseMoveEvent(QMouseEvent *event)
             if (c1!=pix){
                 int dx = pix.x()-c1.x();
                 int dy = pix.y()-c1.y();
-                int tLeft  = selectRect.subImageLeftBak + dx;
-                int tRight = selectRect.subImageRightBak + dx;
-                int tTop   = selectRect.subImageTopBak + dy;
-                int tBottom   = selectRect.subImageBottomBak + dy;
+                int tLeft  = selectRect.pixLeftBak + dx;
+                int tRight = selectRect.pixRightBak + dx;
+                int tTop   = selectRect.pixTopBak + dy;
+                int tBottom   = selectRect.pixBottomBak + dy;
                 if (r.contains(QPoint(tLeft,tTop)) && r.contains(QPoint(tRight,tBottom))){
-                    selectRect.setSubImageRect(tLeft,tTop,tRight,tBottom);
+                    selectRect.setPixLimits(tLeft,tTop,tRight,tBottom);
                     restoreImage();
                     drawRectangle();
                     return true;
@@ -107,8 +111,8 @@ bool RectangleMode::mouseMoveEvent(QMouseEvent *event)
                 int savY = *(selCorner->y);
                 *(selCorner->x) = pix.x();
                 *(selCorner->y) = pix.y();
-                if ((selectRect.subImageLeft<selectRect.subImageRight) &&
-                    (selectRect.subImageTop<selectRect.subImageBottom)){
+                if ((selectRect.pixLeft<selectRect.pixRight) &&
+                    (selectRect.pixTop<selectRect.pixBottom)){
                     restoreImage();
                     drawRectangle();
                     return true;
@@ -136,7 +140,7 @@ bool RectangleMode::mouseMoveEvent(QMouseEvent *event)
                     t = pix.y();
                     b = c1.y();
                 }
-                selectRect.setSubImageRect(l,t,r,b);
+                selectRect.setPixLimits(l,t,r,b);
                 restoreImage();
                 drawRectangle();
                 return true;
@@ -154,7 +158,7 @@ bool RectangleMode::mouseReleaseEvent(QMouseEvent *event)
     if ((event->button() == Qt::LeftButton)){
         fMoveSelectRect = false;
         selCorner = NULL;
-        selectRect.fDefined = !selectRect.isSubImageNULL();
+        selectRect.fDefined = !selectRect.isPixNULL();
     }
     return false;
 }
@@ -163,10 +167,10 @@ bool RectangleMode::mouseReleaseEvent(QMouseEvent *event)
 void RectangleMode::drawSelectRect(QPainter *painter)
 {
     //-- Draw Rect frame
-    int xLeft = selectRect.subImageLeft*cellSize + margin;
-    int yTop  = selectRect.subImageTop*cellSize + margin;
-    int xRight = selectRect.subImageRight*cellSize + margin + cellSize;
-    int yBottom = selectRect.subImageBottom*cellSize + margin + cellSize;
+    int xLeft = selectRect.pixLeft*cellSize + margin;
+    int yTop  = selectRect.pixTop*cellSize + margin;
+    int xRight = selectRect.pixRight*cellSize + margin + cellSize;
+    int yBottom = selectRect.pixBottom*cellSize + margin + cellSize;
 
     selectRect.setRect(xLeft,yTop,xRight-xLeft,yBottom-yTop);
     painter->setBrush(Qt::NoBrush);
@@ -178,27 +182,26 @@ void RectangleMode::drawSelectRect(QPainter *painter)
     painter->setBrush(QBrush(QColor(0,0,128,255)));
 
     //--TopLeft
-    selectRect.corners[0]->setCoords(xLeft-5,yTop-5,xLeft+4,yTop+4);
+    selectRect.corners[0]->setCoords(xLeft-5,yTop-5,xLeft+5,yTop+5);
     painter->drawRect(*selectRect.corners[0]);
 
     //--TopRight
-    selectRect.corners[1]->setCoords(xRight-5,yTop-5,xRight+4,yTop+4);
+    selectRect.corners[1]->setCoords(xRight-5,yTop-5,xRight+5,yTop+5);
     painter->drawRect(*selectRect.corners[1]);
 
     //--BottomRight
-    selectRect.corners[2]->setCoords(xRight-5,yBottom-5,xRight+4,yBottom+4);
+    selectRect.corners[2]->setCoords(xRight-5,yBottom-5,xRight+5,yBottom+5);
     painter->drawRect(*selectRect.corners[2]);
 
     //--BottomRight
-    selectRect.corners[3]->setCoords(xLeft-5,yBottom-5,xLeft+4,yBottom+4);
+    selectRect.corners[3]->setCoords(xLeft-5,yBottom-5,xLeft+5,yBottom+5);
     painter->drawRect(*selectRect.corners[3]);
-
 
 }
 
 void RectangleMode::paintEvent(QPaintEvent *event, QPainter *painter)
 {
-    if (!selectRect.isSubImageNULL()){
+    if (!selectRect.isPixNULL()){
         drawSelectRect(painter);
     }
 }

@@ -14,24 +14,23 @@ public:
 
     CornerRect *corners[4];
 
-    bool isSubImageNULL();
-    void setSubImageNULL();
-    void setSubImageRect(int left,int top,int right,int bottom);
-
-    void BackupSubImageRect();
-    void RestoreSubImageRect();
+    bool isPixNULL();
+    void setPixNULL();
+    void setPixLimits(int left,int top,int right,int bottom);
+    QRect getPixRect();
 
 
+    void BackupPixLimits();
 
-    int subImageLeft   = 0;
-    int subImageTop    = 0;
-    int subImageRight  = 0;
-    int subImageBottom = 0;
+    int pixLeft = 0;
+    int pixTop = 0;
+    int pixRight = 0;
+    int pixBottom = 0;
 
-    int subImageLeftBak   = 0;
-    int subImageTopBak    = 0;
-    int subImageRightBak  = 0;
-    int subImageBottomBak = 0;
+    int pixLeftBak = 0;
+    int pixTopBak = 0;
+    int pixRightBak = 0;
+    int pixBottomBak = 0;
 
 
 };
