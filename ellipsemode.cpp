@@ -10,6 +10,10 @@ EllipseMode::~EllipseMode()
 
 }
 
+void EllipseMode::init()
+{
+
+}
 
 bool EllipseMode::mousePressEvent(QMouseEvent *event)
 {

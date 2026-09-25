@@ -11,6 +11,7 @@ public:
     RectangleMode();
     ~RectangleMode();
 
+    void init();
     bool mousePressEvent(QMouseEvent *event);
     bool mouseMoveEvent(QMouseEvent *event);
     bool mouseReleaseEvent(QMouseEvent *event);
@@ -20,12 +21,12 @@ private:
     CornerRect *selCorner=NULL;
     SelectRect  selectRect;
     bool fMoveSelectRect = false;
-    QPoint c1;
-    QPoint c2;
+    QPoint startPt;
 
     CornerRect *hitCorner(QPoint pt);
     void drawSelectRect(QPainter *painter);
     void drawRectangle();
+    void fillRectangle();
 
 };
 

@@ -26,6 +26,13 @@ void PencilMode::freePolygon()
 
 }
 
+void PencilMode::init()
+{
+    lastPixel = QPoint();
+    freePolygon();
+
+}
+
 void PencilMode::toggleFlash()
 {
 

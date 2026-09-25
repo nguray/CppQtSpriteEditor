@@ -9,6 +9,7 @@ public:
     EllipseMode();
     ~EllipseMode();
 
+    void init();
     bool mousePressEvent(QMouseEvent *event);
     bool mouseMoveEvent(QMouseEvent *event);
     bool mouseReleaseEvent(QMouseEvent *event);

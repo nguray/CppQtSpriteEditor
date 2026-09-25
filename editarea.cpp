@@ -222,14 +222,20 @@ void EditArea::setBackgroundColor(QColor newColor) {
 void EditArea::setPencilMode()
 {
     curEditMode = pencilMode;
+    curEditMode->init();
+    update();
 }
 
 void EditArea::setRectangleMode()
 {
     curEditMode = rectangleMode;
+    curEditMode->init();
+    update();
 }
 
 void EditArea::setEllipseMode()
 {
     curEditMode = ellipseMode;
+    curEditMode->init();
+    update();
 }

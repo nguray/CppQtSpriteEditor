@@ -10,6 +10,14 @@ RectangleMode::~RectangleMode()
 
 }
 
+void RectangleMode::init()
+{
+    selectRect.setPixNULL();
+    selectRect.setRect(0,0,0,0);
+    selectRect.fDefined = false;
+
+}
+
 CornerRect *RectangleMode::hitCorner(QPoint pt)
 {
     CornerRect *c;
@@ -33,10 +41,10 @@ bool RectangleMode::mousePressEvent(QMouseEvent *event)
         auto pix = Pos2Pixel(pt);
 
         if (selCorner=hitCorner(pt)){
-            c1 = pix;
+            startPt = pix;
             return false;
         }else if (selectRect.contains(pt)){
-            c1 = pix;
+            startPt = pix;
             selectRect.BackupPixLimits();
             fMoveSelectRect = true;
             return false;
@@ -46,25 +54,20 @@ bool RectangleMode::mousePressEvent(QMouseEvent *event)
                 if (!selectRect.fDefined){
                     backupImage();
                     selectRect.setPixLimits(pix.x(),pix.y(),pix.x(),pix.y());
-                    c1 = pix;
+                    startPt = pix;
                     return true;
                 }else{
                     backupImage();
-                    selectRect.setPixNULL();
-                    selectRect.setRect(0,0,0,0);
-                    selectRect.fDefined = false;
+                    init();
                     selectRect.setPixLimits(pix.x(),pix.y(),pix.x(),pix.y());
-                    c1 = pix;
+                    startPt = pix;
                     return true;
                 }
 
             }
         }
-    }else if (event->button() == Qt::RightButton) {
-
-        selectRect.setPixNULL();
-        selectRect.setRect(0,0,0,0);
-        selectRect.fDefined = false;
+    }else if (event->button() == Qt::RightButton) {     
+        init();
         return true;
 
     }
@@ -80,6 +83,14 @@ void RectangleMode::drawRectangle()
     painter.drawRect(selectRect.getPixRect());
 }
 
+void RectangleMode::fillRectangle()
+{
+    QPainter painter(EditMode::image.get());
+    painter.setBrush(QBrush(EditMode::foregroundColor));
+    painter.setPen(QPen(EditMode::foregroundColor, 1.0, Qt::SolidLine, Qt::RoundCap,
+                        Qt::RoundJoin));
+    painter.drawRect(selectRect.getPixRect());
+}
 
 
 bool RectangleMode::mouseMoveEvent(QMouseEvent *event)
@@ -91,9 +102,9 @@ bool RectangleMode::mouseMoveEvent(QMouseEvent *event)
         QRect r = image->rect();
 
         if (fMoveSelectRect){
-            if (c1!=pix){
-                int dx = pix.x()-c1.x();
-                int dy = pix.y()-c1.y();
+            if (startPt!=pix){
+                int dx = pix.x()-startPt.x();
+                int dy = pix.y()-startPt.y();
                 int tLeft  = selectRect.pixLeftBak + dx;
                 int tRight = selectRect.pixRightBak + dx;
                 int tTop   = selectRect.pixTopBak + dy;
@@ -101,7 +112,11 @@ bool RectangleMode::mouseMoveEvent(QMouseEvent *event)
                 if (r.contains(QPoint(tLeft,tTop)) && r.contains(QPoint(tRight,tBottom))){
                     selectRect.setPixLimits(tLeft,tTop,tRight,tBottom);
                     restoreImage();
-                    drawRectangle();
+                    if (fShiftKey){
+                        fillRectangle();
+                    }else{
+                        drawRectangle();
+                    }
                     return true;
                 }
             }
@@ -114,7 +129,11 @@ bool RectangleMode::mouseMoveEvent(QMouseEvent *event)
                 if ((selectRect.pixLeft<selectRect.pixRight) &&
                     (selectRect.pixTop<selectRect.pixBottom)){
                     restoreImage();
-                    drawRectangle();
+                    if (fShiftKey){
+                        fillRectangle();
+                    }else{
+                        drawRectangle();
+                    }
                     return true;
                 }else{
                     *(selCorner->x) = savX;
@@ -126,23 +145,27 @@ bool RectangleMode::mouseMoveEvent(QMouseEvent *event)
 
             if (r.contains(pix)){ // Keep actions inside image limits
                 int l,t,r,b;
-                if (pix.x()>c1.x()){
-                    l = c1.x();
+                if (pix.x()>startPt.x()){
+                    l = startPt.x();
                     r = pix.x();
                 }else{
                     l = pix.x();
-                    r = c1.x();
+                    r = startPt.x();
                 }
-                if (pix.y()>c1.y()){
-                    t = c1.y();
+                if (pix.y()>startPt.y()){
+                    t = startPt.y();
                     b = pix.y();
                 }else{
                     t = pix.y();
-                    b = c1.y();
+                    b = startPt.y();
                 }
                 selectRect.setPixLimits(l,t,r,b);
                 restoreImage();
-                drawRectangle();
+                if (fShiftKey){
+                    fillRectangle();
+                }else{
+                    drawRectangle();
+                }
                 return true;
             }
         }
