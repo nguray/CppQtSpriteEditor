@@ -27,12 +27,13 @@ public:
     QRect  Pixel2Rect(int px,int py);
     QRect  Pixel2Rect(QPoint p);
 
-    void   backupImage();
-    void   restoreImage();
+    static void   backupImage();
+    static void   restoreImage();
 
     static void setImage(QSharedPointer<QImage> image);
 
     virtual void init()=0;
+    virtual void updateImage()=0;
     virtual bool mousePressEvent(QMouseEvent *event)=0;
     virtual bool mouseMoveEvent(QMouseEvent *event)=0;
     virtual bool mouseReleaseEvent(QMouseEvent *event)=0;

@@ -15,6 +15,11 @@ void EllipseMode::init()
 
 }
 
+void EllipseMode::updateImage()
+{
+
+}
+
 bool EllipseMode::mousePressEvent(QMouseEvent *event)
 {
     // if (event->button() == Qt::LeftButton) {

@@ -27,6 +27,9 @@ public:
     Palette(QWidget *parent = nullptr);
     ~Palette();
 
+    void save(std::string pathName, std::string fileName);
+    bool load(std::string pathName, std::string fileName);
+
 signals:
     void foreGroundColorChanged(QColor c);
     void backGroundColorChanged(QColor c);
@@ -48,8 +51,7 @@ private:
     unsigned char getRGBGreen(unsigned int rgb);
     unsigned char getRGBBlue(unsigned int rgb);
     unsigned int  RGBA(unsigned char r,unsigned char g,unsigned char b,unsigned char a);
-    void save(std::string pathName, std::string fileName);
-    bool load(std::string pathName, std::string fileName);
+    void          setDefaultPalette();
 
     QColor myGridColor = Qt::black;
 

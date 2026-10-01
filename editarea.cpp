@@ -12,6 +12,7 @@ EditArea::EditArea(QWidget *parent)
     //EditMode::image = QImage(32, 32, QImage::Format_ARGB32);
     EditMode::setImage(QSharedPointer<QImage>::create(32, 32, QImage::Format_ARGB32));
     EditMode::image->fill(QColor(0, 0, 0, 0));
+    EditMode::backupImage();
 
     pencilMode = new PencilMode();
     rectangleMode = new RectangleMode();
@@ -213,10 +214,14 @@ void EditArea::resizeImage(QImage *image, const QSize &newSize)
 
 void EditArea::setForegroundColor(QColor newColor) {
     EditMode::foregroundColor = newColor;
+    curEditMode->updateImage();
+    update();
 }
 
 void EditArea::setBackgroundColor(QColor newColor) {
     EditMode::backgroundColor = newColor;
+    curEditMode->updateImage();
+    update();
 }
 
 void EditArea::setPencilMode()

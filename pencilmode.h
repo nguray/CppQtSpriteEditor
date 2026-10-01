@@ -21,6 +21,7 @@ public:
     void toggleFlash();
 
     void init();
+    void updateImage();
     bool mousePressEvent(QMouseEvent *event);
     bool mouseMoveEvent(QMouseEvent *event);
     bool mouseReleaseEvent(QMouseEvent *event);

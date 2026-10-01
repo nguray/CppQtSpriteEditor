@@ -33,6 +33,11 @@ void PencilMode::init()
 
 }
 
+void PencilMode::updateImage()
+{
+    restoreImage();
+}
+
 void PencilMode::toggleFlash()
 {
 

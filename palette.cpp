@@ -11,9 +11,6 @@ Palette::Palette(QWidget *parent)
     setMinimumHeight(34);   
 
 
-    foreGroundColor = ColorRect(1,1,1.2*cellSize,QColor(0x80, 0x80, 0x80, 0xFF));
-    backGroundColor = ColorRect(1,1,2*cellSize,QColor(0x00, 0x00, 0x00, 0x00));
-
     //-- Fill colors table
     for (int i = 0; i < nbRows; i++) {
         for (int j = 0; j < nbColumns; j++) {
@@ -23,25 +20,7 @@ Palette::Palette(QWidget *parent)
         }
     }
 
-    int i = 0;
-    tblColors[i++]->setColor(QColor(0x00, 0x00, 0x00, 0x00));
-    // tblColors[i++].color = QColor(0x00,0x00,0x00,0xFF);
-    tblColors[i++]->setColor(QColor(0xFF, 0x00, 0x00, 0xFF));
-    tblColors[i++]->setColor(QColor(0xFF, 0xFF, 0xFF, 0xFF));
-    tblColors[i++]->setColor(QColor(0x80, 0x80, 0x80, 0xFF));
-    tblColors[i++]->setColor(QColor(0xC0, 0xC0, 0xC0, 0xFF));
-    tblColors[i++]->setColor(QColor(0x80, 0x00, 0x00, 0xFF));
-    tblColors[i++]->setColor(QColor(0xFF, 0x00, 0x00, 0xFF));
-    tblColors[i++]->setColor(QColor(0x80, 0x80, 0x00, 0xFF));
-    tblColors[i++]->setColor(QColor(0xFF, 0xFF, 0x00, 0xFF));
-    tblColors[i++]->setColor(QColor(0x00, 0x80, 0x00, 0xFF));
-    tblColors[i++]->setColor(QColor(0x00, 0xFF, 0x00, 0xFF));
-    tblColors[i++]->setColor(QColor(0x00, 0x80, 0x80, 0xFF));
-    tblColors[i++]->setColor(QColor(0x00, 0xFF, 0xFF, 0xFF));
-    tblColors[i++]->setColor(QColor(0x00, 0x00, 0x80, 0xFF));
-    tblColors[i++]->setColor(QColor(0x00, 0x00, 0xFF, 0xFF));
-    tblColors[i++]->setColor(QColor(0x80, 0x00, 0x80, 0xFF));
-//    tblColors[i++]->setColor(QColor(0xFF, 0x00, 0xFF, 0xFF));
+    setDefaultPalette();
 
 
 }
@@ -219,6 +198,7 @@ bool Palette::load(std::string pathName, std::string fileName) {
         ic = std::atoi(strWord.c_str());
         foreGroundColor.setColor(QColor(getRGBRed(ic), getRGBGreen(ic),
                                        getRGBBlue(ic), getRGBAlpha(ic)));
+        emit foreGroundColorChanged(foreGroundColor.getColor());
       } else if (strWord == "BACKGROUND") {
         ss >> strWord;
         ic = std::atoi(strWord.c_str());
@@ -237,6 +217,40 @@ bool Palette::load(std::string pathName, std::string fileName) {
     }
     f.close();
     return true;
+  }else{
+
+      setDefaultPalette();
+
   }
   return false;
+}
+
+
+void Palette::setDefaultPalette()
+{
+    int i = 0;
+    tblColors[i++]->setColor(QColor(0x00, 0x00, 0x00, 0x00));
+    // tblColors[i++].color = QColor(0x00,0x00,0x00,0xFF);
+    tblColors[i++]->setColor(QColor(0xFF, 0x00, 0x00, 0xFF));
+    tblColors[i++]->setColor(QColor(0xFF, 0xFF, 0xFF, 0xFF));
+    tblColors[i++]->setColor(QColor(0x80, 0x80, 0x80, 0xFF));
+    tblColors[i++]->setColor(QColor(0xC0, 0xC0, 0xC0, 0xFF));
+    tblColors[i++]->setColor(QColor(0x80, 0x00, 0x00, 0xFF));
+    tblColors[i++]->setColor(QColor(0xFF, 0x00, 0x00, 0xFF));
+    tblColors[i++]->setColor(QColor(0x80, 0x80, 0x00, 0xFF));
+    tblColors[i++]->setColor(QColor(0xFF, 0xFF, 0x00, 0xFF));
+    tblColors[i++]->setColor(QColor(0x00, 0x80, 0x00, 0xFF));
+    tblColors[i++]->setColor(QColor(0x00, 0xFF, 0x00, 0xFF));
+    tblColors[i++]->setColor(QColor(0x00, 0x80, 0x80, 0xFF));
+    tblColors[i++]->setColor(QColor(0x00, 0xFF, 0xFF, 0xFF));
+    tblColors[i++]->setColor(QColor(0x00, 0x00, 0x80, 0xFF));
+    tblColors[i++]->setColor(QColor(0x00, 0x00, 0xFF, 0xFF));
+    tblColors[i++]->setColor(QColor(0x80, 0x00, 0x80, 0xFF));
+    tblColors[i++]->setColor(QColor(0xFF, 0x00, 0xFF, 0xFF));
+
+    foreGroundColor = ColorRect(1,1,1.2*cellSize,QColor(0x80, 0x80, 0xF0, 0xFF));
+    backGroundColor = ColorRect(1,1,2*cellSize,QColor(0x00, 0x00, 0x00, 0x00));
+
+    emit foreGroundColorChanged(foreGroundColor.getColor());
+
 }

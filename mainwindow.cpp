@@ -33,12 +33,18 @@ MainWindow::MainWindow(QWidget *parent)
     connect(palette, &Palette::foreGroundColorChanged, editarea,
           &EditArea::setForegroundColor);
 
+    palette->load(".","myPalette.txt");
+
 }
 
 MainWindow::~MainWindow()
 {
-    delete ui;
-    delete editarea;
+    if (ui) delete ui;
+    if (editarea) delete editarea;
+    if (palette){
+        palette->save(".","myPalette.txt");
+        delete palette;
+    }
 }
 
 void MainWindow::update_toolbar(QAction *selAction)
