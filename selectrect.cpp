@@ -2,10 +2,10 @@
 
 SelectRect::SelectRect()
 {
-    corners[0] = new CornerRect(&pixLeft,&pixTop);
-    corners[1] = new CornerRect(&pixRight,&pixTop);
-    corners[2] = new CornerRect(&pixRight,&pixBottom);
-    corners[3] = new CornerRect(&pixLeft,&pixBottom);
+    corners[0] = new CornerRect(&pixLeft,&pixTop,-1,-1);
+    corners[1] = new CornerRect(&pixRight,&pixTop,1,-1);
+    corners[2] = new CornerRect(&pixRight,&pixBottom,1,1);
+    corners[3] = new CornerRect(&pixLeft,&pixBottom,-1,1);
 
 }
 

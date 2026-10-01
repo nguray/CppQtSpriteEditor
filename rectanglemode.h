@@ -12,6 +12,7 @@ public:
     ~RectangleMode();
 
     void init();
+    void updateImage();
     bool mousePressEvent(QMouseEvent *event);
     bool mouseMoveEvent(QMouseEvent *event);
     bool mouseReleaseEvent(QMouseEvent *event);
@@ -21,6 +22,7 @@ private:
     CornerRect *selCorner=NULL;
     SelectRect  selectRect;
     bool fMoveSelectRect = false;
+    bool fDoNotDrawHandles = false;
     QPoint startPt;
 
     CornerRect *hitCorner(QPoint pt);

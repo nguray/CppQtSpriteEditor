@@ -15,7 +15,18 @@ void RectangleMode::init()
     selectRect.setPixNULL();
     selectRect.setRect(0,0,0,0);
     selectRect.fDefined = false;
+    backupImage();
 
+}
+
+void RectangleMode::updateImage()
+{
+    restoreImage();
+    if (fShiftKey){
+        fillRectangle();
+    }else{
+        drawRectangle();
+    }
 }
 
 CornerRect *RectangleMode::hitCorner(QPoint pt)
@@ -36,17 +47,18 @@ bool RectangleMode::mousePressEvent(QMouseEvent *event)
 
     if (event->button() == Qt::LeftButton) {
 
-
         QPoint pt = event->position().toPoint();
         auto pix = Pos2Pixel(pt);
 
         if (selCorner=hitCorner(pt)){
             startPt = pix;
+            fDoNotDrawHandles = true;
             return false;
         }else if (selectRect.contains(pt)){
             startPt = pix;
             selectRect.BackupPixLimits();
             fMoveSelectRect = true;
+            fDoNotDrawHandles = true;
             return false;
         }else{
             QRect r = image->rect();
@@ -65,6 +77,7 @@ bool RectangleMode::mousePressEvent(QMouseEvent *event)
                 }
 
             }
+            fDoNotDrawHandles = false;
         }
     }else if (event->button() == Qt::RightButton) {     
         init();
@@ -111,34 +124,29 @@ bool RectangleMode::mouseMoveEvent(QMouseEvent *event)
                 int tBottom   = selectRect.pixBottomBak + dy;
                 if (r.contains(QPoint(tLeft,tTop)) && r.contains(QPoint(tRight,tBottom))){
                     selectRect.setPixLimits(tLeft,tTop,tRight,tBottom);
-                    restoreImage();
-                    if (fShiftKey){
-                        fillRectangle();
-                    }else{
-                        drawRectangle();
-                    }
+                    updateImage();
+                    fDoNotDrawHandles = true;
                     return true;
                 }
             }
         }else if (selCorner){
             if (r.contains(pix)){ // Keep actions inside image limits
-                int savX = *(selCorner->x);
-                int savY = *(selCorner->y);
-                *(selCorner->x) = pix.x();
-                *(selCorner->y) = pix.y();
-                if ((selectRect.pixLeft<selectRect.pixRight) &&
-                    (selectRect.pixTop<selectRect.pixBottom)){
-                    restoreImage();
-                    if (fShiftKey){
-                        fillRectangle();
+                QPoint v = pix - startPt;
+                if (v.x()||v.y()){
+                    int savX = *(selCorner->x);
+                    int savY = *(selCorner->y);
+                    *(selCorner->x) = startPt.x() + v.x();
+                    *(selCorner->y) = startPt.y() + v.y();
+                    if ((selectRect.pixLeft<selectRect.pixRight) &&
+                        (selectRect.pixTop<selectRect.pixBottom)){
+                        updateImage();
+                        fDoNotDrawHandles = true;
+                        return true;
                     }else{
-                        drawRectangle();
+                        *(selCorner->x) = savX;
+                        *(selCorner->y) = savY;
+                        return false;
                     }
-                    return true;
-                }else{
-                    *(selCorner->x) = savX;
-                    *(selCorner->y) = savY;
-                    return false;
                 }
             }
         }else if (!selectRect.fDefined){
@@ -160,12 +168,8 @@ bool RectangleMode::mouseMoveEvent(QMouseEvent *event)
                     b = startPt.y();
                 }
                 selectRect.setPixLimits(l,t,r,b);
-                restoreImage();
-                if (fShiftKey){
-                    fillRectangle();
-                }else{
-                    drawRectangle();
-                }
+                updateImage();
+                fDoNotDrawHandles = true;
                 return true;
             }
         }
@@ -183,13 +187,14 @@ bool RectangleMode::mouseReleaseEvent(QMouseEvent *event)
         selCorner = NULL;
         selectRect.fDefined = !selectRect.isPixNULL();
     }
-    return false;
+    fDoNotDrawHandles = false;
+    return true;
 }
 
 
 void RectangleMode::drawSelectRect(QPainter *painter)
 {
-    //-- Draw Rect frame
+    //-- Rect frame
     int xLeft = selectRect.pixLeft*cellSize + margin;
     int yTop  = selectRect.pixTop*cellSize + margin;
     int xRight = selectRect.pixRight*cellSize + margin + cellSize;
@@ -204,21 +209,37 @@ void RectangleMode::drawSelectRect(QPainter *painter)
     //-- Draw corner handles
     painter->setBrush(QBrush(QColor(0,0,128,255)));
 
-    //--TopLeft
-    selectRect.corners[0]->setCoords(xLeft-5,yTop-5,xLeft+5,yTop+5);
-    painter->drawRect(*selectRect.corners[0]);
 
-    //--TopRight
-    selectRect.corners[1]->setCoords(xRight-5,yTop-5,xRight+5,yTop+5);
-    painter->drawRect(*selectRect.corners[1]);
 
-    //--BottomRight
-    selectRect.corners[2]->setCoords(xRight-5,yBottom-5,xRight+5,yBottom+5);
-    painter->drawRect(*selectRect.corners[2]);
+    if (!fDoNotDrawHandles){
+        CornerRect *pC;
+        auto drawCorner = [painter](CornerRect *pC,int x,int y)
+        {
+            pC->setCoords(x-5,y-5,x+5,y+5);
+            pC->translate(pC->offsetX,pC->offsetY);
+            painter->drawRect(*pC);
+        };
 
-    //--BottomRight
-    selectRect.corners[3]->setCoords(xLeft-5,yBottom-5,xLeft+5,yBottom+5);
-    painter->drawRect(*selectRect.corners[3]);
+        //--TopLet
+        if (pC = selectRect.corners[0]){
+            drawCorner(pC,xLeft,yTop);
+        }
+
+        //--TopRight
+        if (pC = selectRect.corners[1]){
+            drawCorner(pC,xRight,yTop);
+        }
+
+        //--BottomRight
+        if (pC = selectRect.corners[2]){
+            drawCorner(pC,xRight,yBottom);
+        }
+
+        //--BottomRight
+        if (pC = selectRect.corners[3]){
+            drawCorner(pC,xLeft,yBottom);
+        }
+    }
 
 }
 
