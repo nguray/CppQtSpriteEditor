@@ -36,7 +36,10 @@ void PencilMode::init()
 
 void PencilMode::updateImage()
 {
-    restoreImage();
+    if (polygon.size()){
+        restoreImage();
+        drawPolygon();
+    }
 }
 
 void PencilMode::toggleFlash()
@@ -164,7 +167,7 @@ bool PencilMode::mouseMoveEvent(QMouseEvent *event)
 
     }else{
 
-        if (hitVertex(pt)){
+        if ((fShiftKey)&&(hitVertex(pt))){
             mousePointer = Qt::SizeAllCursor;
         }else{
             mousePointer = Qt::ArrowCursor;

@@ -69,3 +69,54 @@ CornerRect *SelectRect::hitCorner(QPoint pt)
 
     return NULL;
 }
+
+void SelectRect::draw(QPainter *painter,int margin,int cellSize, bool fDrawHandles)
+{
+    //-- Rect frame
+    int xLeft = pixLeft*cellSize + margin;
+    int yTop  = pixTop*cellSize + margin;
+    int xRight = pixRight*cellSize + margin + cellSize;
+    int yBottom = pixBottom*cellSize + margin + cellSize;
+
+    setRect(xLeft,yTop,xRight-xLeft,yBottom-yTop);
+    painter->setBrush(Qt::NoBrush);
+    painter->setPen(QPen(QColor(0,0,64,64), 1.0, Qt::SolidLine, Qt::RoundCap,
+                         Qt::RoundJoin));
+    painter->drawRect(*this);
+
+    //-- Draw corner handles
+    painter->setBrush(QBrush(QColor(0,0,128,255)));
+
+
+
+    if (fDrawHandles){
+        CornerRect *pC;
+        auto drawCorner = [painter](CornerRect *pC,int x,int y)
+        {
+            pC->setCoords(x-5,y-5,x+5,y+5);
+            pC->translate(pC->offsetX,pC->offsetY);
+            painter->drawRect(*pC);
+        };
+
+        //--TopLet
+        if (pC = corners[0]){
+            drawCorner(pC,xLeft,yTop);
+        }
+
+        //--TopRight
+        if (pC = corners[1]){
+            drawCorner(pC,xRight,yTop);
+        }
+
+        //--BottomRight
+        if (pC = corners[2]){
+            drawCorner(pC,xRight,yBottom);
+        }
+
+        //--BottomRight
+        if (pC = corners[3]){
+            drawCorner(pC,xLeft,yBottom);
+        }
+    }
+
+}

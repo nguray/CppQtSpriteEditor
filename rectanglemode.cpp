@@ -194,60 +194,9 @@ bool RectangleMode::mouseReleaseEvent(QMouseEvent *event)
 }
 
 
-void RectangleMode::drawSelectRect(QPainter *painter)
-{
-    //-- Rect frame
-    int xLeft = selectRect.pixLeft*cellSize + margin;
-    int yTop  = selectRect.pixTop*cellSize + margin;
-    int xRight = selectRect.pixRight*cellSize + margin + cellSize;
-    int yBottom = selectRect.pixBottom*cellSize + margin + cellSize;
-
-    selectRect.setRect(xLeft,yTop,xRight-xLeft,yBottom-yTop);
-    painter->setBrush(Qt::NoBrush);
-    painter->setPen(QPen(QColor(0,0,64,64), 1.0, Qt::SolidLine, Qt::RoundCap,
-                         Qt::RoundJoin));
-    painter->drawRect(selectRect);
-
-    //-- Draw corner handles
-    painter->setBrush(QBrush(QColor(0,0,128,255)));
-
-
-
-    if (!fDoNotDrawHandles){
-        CornerRect *pC;
-        auto drawCorner = [painter](CornerRect *pC,int x,int y)
-        {
-            pC->setCoords(x-5,y-5,x+5,y+5);
-            pC->translate(pC->offsetX,pC->offsetY);
-            painter->drawRect(*pC);
-        };
-
-        //--TopLet
-        if (pC = selectRect.corners[0]){
-            drawCorner(pC,xLeft,yTop);
-        }
-
-        //--TopRight
-        if (pC = selectRect.corners[1]){
-            drawCorner(pC,xRight,yTop);
-        }
-
-        //--BottomRight
-        if (pC = selectRect.corners[2]){
-            drawCorner(pC,xRight,yBottom);
-        }
-
-        //--BottomRight
-        if (pC = selectRect.corners[3]){
-            drawCorner(pC,xLeft,yBottom);
-        }
-    }
-
-}
-
 void RectangleMode::paintEvent(QPaintEvent *event, QPainter *painter)
 {
     if (!selectRect.isPixNULL()){
-        drawSelectRect(painter);
+        selectRect.draw(painter,margin,cellSize,!fDoNotDrawHandles);
     }
 }

@@ -25,7 +25,6 @@ private:
     bool fDoNotDrawHandles = false;
     QPoint startPt;
 
-    void drawSelectRect(QPainter *painter);
     void drawEllipse();
     void fillEllipse();
 
