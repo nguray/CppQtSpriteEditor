@@ -2,10 +2,14 @@
 
 SelectRect::SelectRect()
 {
-    corners[0] = new CornerRect(&pixLeft,&pixTop,-1,-1);
-    corners[1] = new CornerRect(&pixRight,&pixTop,1,-1);
-    corners[2] = new CornerRect(&pixRight,&pixBottom,1,1);
-    corners[3] = new CornerRect(&pixLeft,&pixBottom,-1,1);
+    // TopLeft
+    corners[0] = new CornerRect(&pixLeft,&pixTop,-1,-1,Qt::SizeFDiagCursor);
+    // TopRight
+    corners[1] = new CornerRect(&pixRight,&pixTop,1,-1,Qt::SizeBDiagCursor);
+    // BottomRight
+    corners[2] = new CornerRect(&pixRight,&pixBottom,1,1,Qt::SizeFDiagCursor);
+    // BottomLeft
+    corners[3] = new CornerRect(&pixLeft,&pixBottom,-1,1,Qt::SizeBDiagCursor);
 
 }
 

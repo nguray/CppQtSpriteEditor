@@ -12,6 +12,7 @@ RectangleMode::~RectangleMode()
 
 void RectangleMode::init()
 {
+    mousePointer = Qt::ArrowCursor;
     selectRect.setPixNULL();
     selectRect.setRect(0,0,0,0);
     selectRect.fDefined = false;
@@ -108,10 +109,11 @@ void RectangleMode::fillRectangle()
 
 bool RectangleMode::mouseMoveEvent(QMouseEvent *event)
 {
+    QPoint pt = event->position().toPoint();
+    auto pix = Pos2Pixel(pt);
 
     if ((event->buttons() & Qt::LeftButton)){
 
-        auto pix = Pos2Pixel(event->position().toPoint());
         QRect r = image->rect();
 
         if (fMoveSelectRect){
@@ -174,6 +176,17 @@ bool RectangleMode::mouseMoveEvent(QMouseEvent *event)
             }
         }
 
+
+    }else{
+
+        if (auto c = hitCorner(pt)){
+            mousePointer = c->cursorShape;
+        }else if (selectRect.contains(pt)){
+            mousePointer = Qt::SizeAllCursor;
+        }else{
+            mousePointer = Qt::ArrowCursor;
+        }
+
     }
 
     return false;
@@ -188,6 +201,7 @@ bool RectangleMode::mouseReleaseEvent(QMouseEvent *event)
         selectRect.fDefined = !selectRect.isPixNULL();
     }
     fDoNotDrawHandles = false;
+    mousePointer = Qt::ArrowCursor;
     return true;
 }
 

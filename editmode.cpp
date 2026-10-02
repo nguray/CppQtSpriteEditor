@@ -10,6 +10,7 @@ QImage EditMode::image_bak = QImage(32, 32, QImage::Format_ARGB32);
 bool EditMode::fShiftKey = false;
 int EditMode::margin = 4; 
 int EditMode::cellSize = 10;
+Qt::CursorShape EditMode::mousePointer = Qt::ArrowCursor;
 
 
 EditMode::EditMode()

@@ -16,6 +16,7 @@ public:
     static QColor backgroundColor;
     static QSharedPointer<QImage> image;
     static QImage image_bak;
+    static Qt::CursorShape mousePointer;
 
     static int margin; 
     static int cellSize;

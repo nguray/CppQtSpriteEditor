@@ -28,6 +28,7 @@ void PencilMode::freePolygon()
 
 void PencilMode::init()
 {
+    mousePointer = Qt::ArrowCursor;
     lastPixel = QPoint();
     freePolygon();
 
@@ -138,9 +139,10 @@ bool PencilMode::mousePressEvent(QMouseEvent *event)
 
 bool PencilMode::mouseMoveEvent(QMouseEvent *event)
 {
-   if ((event->buttons() & Qt::LeftButton)){
+    auto pt = event->position().toPoint();
+    auto pix = Pos2Pixel(pt);
+    if ((event->buttons() & Qt::LeftButton)){
 
-        auto pix = Pos2Pixel(event->position().toPoint());
         QRect r = image->rect();
 
         if (r.contains(pix)){ // Keep movement inside image limits
@@ -158,6 +160,13 @@ bool PencilMode::mouseMoveEvent(QMouseEvent *event)
             }
         }
 
+    }else{
+
+        if (hitVertex(pt)){
+            mousePointer = Qt::SizeAllCursor;
+        }else{
+            mousePointer = Qt::ArrowCursor;
+        }
     }
 
     return false;

@@ -18,6 +18,7 @@ public:
     bool mouseReleaseEvent(QMouseEvent *event);
     void paintEvent(QPaintEvent *event, QPainter *painter);
 
+
 private:
     CornerRect *selCorner=NULL;
     SelectRect  selectRect;

@@ -7,7 +7,8 @@ EditArea::EditArea(QWidget *parent)
     setAttribute(Qt::WA_StaticContents);
     // 1. Allow the widget to get focus by clicking or tabbing
     setFocusPolicy(Qt::StrongFocus);
-    
+    // Enable tracking to get move events without clicking
+    setMouseTracking(true);
 
     //EditMode::image = QImage(32, 32, QImage::Format_ARGB32);
     EditMode::setImage(QSharedPointer<QImage>::create(32, 32, QImage::Format_ARGB32));
@@ -79,6 +80,10 @@ void EditArea::mousePressEvent(QMouseEvent *event)
     if (curEditMode->mousePressEvent(event)){
         update();
     }
+    // Change EditArea widget cursor if required
+    if (cursor().shape()!=curEditMode->mousePointer){
+        setCursor(curEditMode->mousePointer);
+    }
 
 }
 
@@ -90,6 +95,11 @@ void EditArea::mouseMoveEvent(QMouseEvent *event)
         update();
     }
 
+    // Change EditArea widget cursor if required
+    if (cursor().shape()!=curEditMode->mousePointer){
+        setCursor(curEditMode->mousePointer);
+    }
+
 }
 
 void EditArea::mouseReleaseEvent(QMouseEvent *event)
@@ -97,6 +107,10 @@ void EditArea::mouseReleaseEvent(QMouseEvent *event)
     event->accept();
     if (curEditMode->mouseReleaseEvent(event)){
         update();
+    }
+    // Change EditArea widget cursor if required
+    if (cursor().shape()!=curEditMode->mousePointer){
+        setCursor(curEditMode->mousePointer);
     }
 
 }

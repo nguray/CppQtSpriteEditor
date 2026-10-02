@@ -56,7 +56,6 @@ private:
     bool modified = false;
     int myPenWidth = 1;
 
-
     QColor myGridColor = Qt::black;
     QPoint lastPoint;
 
