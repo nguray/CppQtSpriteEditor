@@ -85,14 +85,16 @@ PixelRect *PencilMode::hitVertex(QPoint pt)
 bool PencilMode::mousePressEvent(QMouseEvent *event)
 {
     
+    auto pt = event->position().toPoint();
+
     if (event->button() == Qt::LeftButton) {
 
-        auto pix = Pos2Pixel(event->position().toPoint());
+        auto pix = Pos2Pixel(pt);
         QRect r = image->rect();
 
         if (event->modifiers() & Qt::ShiftModifier) {
 
-            if (selVertex=hitVertex(event->position().toPoint())){
+            if (selVertex=hitVertex(pt)){
                 return false;
             }else{
 

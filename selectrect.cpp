@@ -58,3 +58,14 @@ void SelectRect::BackupPixLimits()
      pixBottomBak = pixBottom;
 }
 
+CornerRect *SelectRect::hitCorner(QPoint pt)
+{
+    CornerRect *c;
+    for (auto i=0;i<4;i++){
+        if ((c=corners[i]) && (c->contains(pt))){
+            return c;
+        }
+    }
+
+    return NULL;
+}

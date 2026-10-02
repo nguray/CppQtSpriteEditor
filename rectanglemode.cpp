@@ -30,18 +30,6 @@ void RectangleMode::updateImage()
     }
 }
 
-CornerRect *RectangleMode::hitCorner(QPoint pt)
-{
-    CornerRect *c;
-    for (auto i=0;i<4;i++){
-        if ((c=selectRect.corners[i]) && (c->contains(pt))){
-            return c;
-        }
-    }
-
-    return NULL;
-}
-
 
 bool RectangleMode::mousePressEvent(QMouseEvent *event)
 {
@@ -51,7 +39,7 @@ bool RectangleMode::mousePressEvent(QMouseEvent *event)
         QPoint pt = event->position().toPoint();
         auto pix = Pos2Pixel(pt);
 
-        if (selCorner=hitCorner(pt)){
+        if (selCorner=selectRect.hitCorner(pt)){
             startPt = pix;
             fDoNotDrawHandles = true;
             return false;
@@ -179,7 +167,7 @@ bool RectangleMode::mouseMoveEvent(QMouseEvent *event)
 
     }else{
 
-        if (auto c = hitCorner(pt)){
+        if (auto c = selectRect.hitCorner(pt)){
             mousePointer = c->cursorShape;
         }else if (selectRect.contains(pt)){
             mousePointer = Qt::SizeAllCursor;

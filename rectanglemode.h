@@ -26,7 +26,6 @@ private:
     bool fDoNotDrawHandles = false;
     QPoint startPt;
 
-    CornerRect *hitCorner(QPoint pt);
     void drawSelectRect(QPainter *painter);
     void drawRectangle();
     void fillRectangle();
