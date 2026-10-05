@@ -238,6 +238,15 @@ void EditArea::setBackgroundColor(QColor newColor) {
     update();
 }
 
+
+void EditArea::setNewSpriteImage(QSharedPointer<QImage> newImage)
+{
+    curEditMode->init();
+    EditMode::setImage(newImage);
+    EditMode::backupImage();
+    update();
+}
+
 void EditArea::setPencilMode()
 {
     curEditMode = pencilMode;
@@ -258,3 +267,4 @@ void EditArea::setEllipseMode()
     curEditMode->init();
     update();
 }
+

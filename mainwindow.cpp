@@ -75,6 +75,11 @@ void MainWindow::on_actionNewTrigger()
         qDebug() << "New Sprite OK";
         qDebug() << "Width : " << newSpriteDlg.getSpriteWidth();
         qDebug() << "Height : " << newSpriteDlg.getSpriteHeight();
+        auto img = QSharedPointer<QImage>::create(newSpriteDlg.getSpriteWidth(), newSpriteDlg.getSpriteHeight(), QImage::Format_ARGB32);
+        img->fill(QColor(0, 0, 0, 0));
+        editarea->setNewSpriteImage(img);
+        //EditMode::setImage(QSharedPointer<QImage>::create(32, 32, QImage::Format_ARGB32));
+        //EditMode::image->fill(QColor(0, 0, 0, 0));
 
     } else {
         // User clicked Cancel or closed the window

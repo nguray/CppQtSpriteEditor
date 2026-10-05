@@ -33,6 +33,8 @@ public slots:
     void setForegroundColor(QColor newColor);
     void setBackgroundColor(QColor newColor);
     void toggleFlash();
+    void setNewSpriteImage(QSharedPointer<QImage> newImage);
+
 
 
 protected:

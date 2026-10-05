@@ -9,8 +9,8 @@ NewSpriteDlg::NewSpriteDlg(QWidget *parent)
     ui->setupUi(this);
 
     // Restrict lineEdit input to integers between 0 and 9999
-    ui->WidthEdit->setValidator(new QIntValidator(0, 1024, this));
-    ui->HeightEdit->setValidator(new QIntValidator(0, 1024, this));
+    ui->WidthEdit->setValidator(new QIntValidator(1, 1024, this));
+    ui->HeightEdit->setValidator(new QIntValidator(1, 1024, this));
 }
 
 NewSpriteDlg::~NewSpriteDlg()
