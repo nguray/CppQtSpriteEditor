@@ -9,6 +9,7 @@ MainWindow::MainWindow(QWidget *parent)
     , ui(new Ui::MainWindow)
     , editarea(new EditArea(this))
     , palette (new Palette(this))
+    , sprites(new Sprites(this))
 {
 
     ui->setupUi(this);
@@ -30,8 +31,11 @@ MainWindow::MainWindow(QWidget *parent)
 
     ui->centralwidget->setLayout(ui->verticalLayout0);
 
+    QHBoxLayout *hlayout = ui->horizontalLayout0;
+    hlayout->addWidget(editarea,0);
+    hlayout->addWidget(sprites,0);
+
     QVBoxLayout *layout = ui->verticalLayout0;
-    layout->addWidget(editarea,0);
     layout->addWidget(palette,0);
     editarea->show();
     palette->show();
