@@ -2,6 +2,8 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
+#include "newspritedlg.h"
+
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
@@ -10,6 +12,10 @@ MainWindow::MainWindow(QWidget *parent)
 {
 
     ui->setupUi(this);
+
+    connect(ui->actionNew, SIGNAL(triggered()),
+            this,SLOT(on_actionNewTrigger()));
+
     connect(ui->actionLine, SIGNAL(triggered()),
             this,SLOT(on_actionLineTrigger()));
     connect(ui->actionRectangle, SIGNAL(triggered()),
@@ -57,6 +63,24 @@ void MainWindow::update_toolbar(QAction *selAction)
         }
     }
     selAction->setDisabled(true);
+}
+
+void MainWindow::on_actionNewTrigger()
+{
+    NewSpriteDlg newSpriteDlg(this);
+
+    // exec() blocks execution and returns QDialog::Accepted or QDialog::Rejected
+    if (newSpriteDlg.exec() == QDialog::Accepted) {
+        // User clicked OK - extract data here if needed
+        qDebug() << "New Sprite OK";
+        qDebug() << "Width : " << newSpriteDlg.getSpriteWidth();
+        qDebug() << "Height : " << newSpriteDlg.getSpriteHeight();
+
+    } else {
+        // User clicked Cancel or closed the window
+        qDebug() << "New Sprite Cancel";
+    }
+
 }
 
 

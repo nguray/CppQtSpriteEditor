@@ -21,6 +21,7 @@ public:
     void setPixLimits(int left,int top,int right,int bottom);
     QRect getPixRect();
 
+    void resetHandles();
     void draw(QPainter *painter,int margin,int cellSize,bool fDrawHandles);
 
     void BackupPixLimits();

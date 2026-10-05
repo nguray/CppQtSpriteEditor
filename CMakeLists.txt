@@ -29,6 +29,7 @@ qt_add_executable(SpriteEditor
     pixelrect.h pixelrect.cpp
     selectrect.h selectrect.cpp
     cornerrect.h cornerrect.cpp
+    newspritedlg.h newspritedlg.cpp newspritedlg.ui
 )
 
 target_link_libraries(SpriteEditor

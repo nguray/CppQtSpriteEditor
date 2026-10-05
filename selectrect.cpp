@@ -33,8 +33,19 @@ void SelectRect::setPixNULL()
     pixRight = 0;
     pixTop = 0;
     pixBottom = 0;
+
 }
 
+void SelectRect::resetHandles()
+{
+    // Avoid unwilling handles selection
+    for (auto i=0;i<4;i++){
+        if (auto c = corners[i]){
+            c->setRect(0,0,0,0);
+        }
+    }
+
+}
 
 QRect SelectRect::getPixRect()
 {
@@ -84,12 +95,11 @@ void SelectRect::draw(QPainter *painter,int margin,int cellSize, bool fDrawHandl
                          Qt::RoundJoin));
     painter->drawRect(*this);
 
-    //-- Draw corner handles
+    //-- Set corner's handles fill color
     painter->setBrush(QBrush(QColor(0,0,128,255)));
 
-
-
     if (fDrawHandles){
+        // Create and draw corners handles
         CornerRect *pC;
         auto drawCorner = [painter](CornerRect *pC,int x,int y)
         {

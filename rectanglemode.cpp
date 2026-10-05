@@ -16,6 +16,7 @@ void RectangleMode::init()
     selectRect.setPixNULL();
     selectRect.setRect(0,0,0,0);
     selectRect.fDefined = false;
+    selectRect.resetHandles();
     backupImage();
 
 }

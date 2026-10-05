@@ -21,6 +21,7 @@ public:
     void update_toolbar(QAction *selAction);
 
 private slots:
+    void on_actionNewTrigger();
     void on_actionLineTrigger();
     void on_actionRectangleTrigger();
     void on_actionEllipseTrigger();
