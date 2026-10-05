@@ -11,17 +11,11 @@ QT_ADD_RESOURCES(PROJECT_RESOURCES ${RESOURCE_FILES})
 qt_add_executable(SpriteEditor
     WIN32 MACOSX_BUNDLE
     main.cpp
-    mainwindow.cpp
-    mainwindow.h
-    mainwindow.ui
-    editarea.cpp
-    editarea.h
-    colorrect.cpp
-    colorrect.h
-    palette.cpp
-    palette.h
-    editmode.h
-    editmode.cpp
+    mainwindow.h mainwindow.cpp mainwindow.ui
+    editarea.h editarea.cpp
+    colorrect.h colorrect.cpp
+    palette.h palette.cpp
+    editmode.h editmode.cpp
     ${PROJECT_RESOURCES}
     rectanglemode.h rectanglemode.cpp
     pencilmode.h pencilmode.cpp

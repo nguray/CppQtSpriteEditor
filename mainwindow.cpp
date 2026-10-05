@@ -40,6 +40,14 @@ MainWindow::MainWindow(QWidget *parent)
     editarea->show();
     palette->show();
 
+
+    connect(sprites,&Sprites::spriteChanged,editarea,&EditArea::setNewSpriteImage);
+    connect(editarea,&EditArea::imageChanged,sprites,&Sprites::updateDisplay);
+
+
+    sprites->newSprite(32,32);
+
+
     connect(palette, &Palette::foreGroundColorChanged, editarea,
           &EditArea::setForegroundColor);
 

@@ -79,6 +79,7 @@ void EditArea::mousePressEvent(QMouseEvent *event)
     event->accept();
     if (curEditMode->mousePressEvent(event)){
         update();
+        emit(imageChanged());
     }
     // Change EditArea widget cursor if required
     if (cursor().shape()!=curEditMode->mousePointer){
@@ -93,6 +94,7 @@ void EditArea::mouseMoveEvent(QMouseEvent *event)
     event->accept();
     if (curEditMode->mouseMoveEvent(event)){
         update();
+        emit(imageChanged());
     }
 
     // Change EditArea widget cursor if required

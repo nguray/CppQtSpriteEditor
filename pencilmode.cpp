@@ -28,6 +28,7 @@ void PencilMode::freePolygon()
 
 void PencilMode::init()
 {
+    lastPixDraw = QPoint(0,0);
     mousePointer = Qt::ArrowCursor;
     lastPixel = QPoint();
     freePolygon();
@@ -124,6 +125,7 @@ bool PencilMode::mousePressEvent(QMouseEvent *event)
             if (r.contains(pix)){ // Keep actions inside image limits
                 backupImage();
                 image->setPixelColor(pix,foregroundColor);
+                lastPixDraw = pix;
                 return true;
             }
         }
@@ -160,8 +162,12 @@ bool PencilMode::mouseMoveEvent(QMouseEvent *event)
                     return true;
                 }
             }else{
-                image->setPixelColor(pix,foregroundColor);
-                return true;
+
+                if (pix!=lastPixDraw){
+                    lastPixDraw = pix;
+                    image->setPixelColor(pix,foregroundColor);
+                    return true;
+                }
             }
         }
 

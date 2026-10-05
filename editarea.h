@@ -36,6 +36,8 @@ public slots:
     void setNewSpriteImage(QSharedPointer<QImage> newImage);
 
 
+signals:
+    void imageChanged();
 
 protected:
     void mousePressEvent(QMouseEvent *event) override;

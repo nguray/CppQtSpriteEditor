@@ -8,15 +8,29 @@
 #include <QPainter>
 #include <QRect>
 #include <QPoint>
+#include <array>
 
 class Sprites : public QWidget
 {
     Q_OBJECT
 public:
+
+    enum {
+        NB_SPRITES = 5
+    };
+
     explicit Sprites(QWidget *parent = nullptr);
     ~Sprites();
 
+    void newSprite(int w, int h);
+
+
+
+public slots:
+    void updateDisplay();
+
 signals:
+    void spriteChanged(QSharedPointer<QImage> spr);
 
 
 protected:
@@ -28,13 +42,19 @@ protected:
 
 private:
 
-    const int nbCells = 5;
     int cellSize      = 64;
     int iSelectCell   = 0;
+    int iSelectCellPopupMenu = 0;
     QRect cellsRect;
+
+    std::array<QSharedPointer<QImage>,NB_SPRITES> sprites;
 
     void drawCells(QPainter *painter);
     void drawSelectMark(QPainter *painter);
+    void drawSprites(QPainter *painter);
+
+    void newImageTriggered();
+    void loadImageTriggered();
 
 
 };

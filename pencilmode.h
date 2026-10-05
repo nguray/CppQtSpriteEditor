@@ -30,6 +30,8 @@ public:
 private:
     std::vector<PixelRect *> polygon;
 
+    QPoint  lastPixDraw;
+
     QColor  vertexHandleColor1;
     QColor  vertexHandleColor2;
 
