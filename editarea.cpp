@@ -11,7 +11,7 @@ EditArea::EditArea(QWidget *parent)
     setMouseTracking(true);
 
     //EditMode::image = QImage(32, 32, QImage::Format_ARGB32);
-    EditMode::setImage(QSharedPointer<QImage>::create(32, 32, QImage::Format_ARGB32));
+    EditMode::setImage(QSharedPointer<SpriteImage>::create(32, 32, QImage::Format_ARGB32));
     EditMode::image->fill(QColor(0, 0, 0, 0));
     EditMode::backupImage();
 
@@ -241,7 +241,7 @@ void EditArea::setBackgroundColor(QColor newColor) {
 }
 
 
-void EditArea::setNewSpriteImage(QSharedPointer<QImage> newImage)
+void EditArea::setNewSpriteImage(QSharedPointer<SpriteImage> newImage)
 {
     curEditMode->init();
     EditMode::setImage(newImage);

@@ -1,6 +1,9 @@
 
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
+#include <QFileDialog>
+#include <QString>
+#include <QDebug>
 
 #include "newspritedlg.h"
 
@@ -16,6 +19,12 @@ MainWindow::MainWindow(QWidget *parent)
 
     connect(ui->actionNew, SIGNAL(triggered()),
             this,SLOT(on_actionNewTrigger()));
+    connect(ui->actionOpen, SIGNAL(triggered()),
+            this,SLOT(on_actionOpenTrigger()));
+    connect(ui->actionSave, SIGNAL(triggered()),
+            this,SLOT(on_actionSaveTrigger()));
+    connect(ui->actionSave_As, SIGNAL(triggered()),
+            this,SLOT(on_actionSaveAsTrigger()));
 
     connect(ui->actionLine, SIGNAL(triggered()),
             this,SLOT(on_actionLineTrigger()));
@@ -42,7 +51,7 @@ MainWindow::MainWindow(QWidget *parent)
 
 
     connect(sprites,&Sprites::spriteChanged,editarea,&EditArea::setNewSpriteImage);
-    connect(editarea,&EditArea::imageChanged,sprites,&Sprites::updateDisplay);
+    connect(editarea,&EditArea::imageChanged,sprites,&Sprites::on_imageChanged);
 
 
     sprites->newSprite(32,32);
@@ -79,27 +88,45 @@ void MainWindow::update_toolbar(QAction *selAction)
 
 void MainWindow::on_actionNewTrigger()
 {
-    NewSpriteDlg newSpriteDlg(this);
+    sprites->newCurrentSprite();
 
-    // exec() blocks execution and returns QDialog::Accepted or QDialog::Rejected
-    if (newSpriteDlg.exec() == QDialog::Accepted) {
-        // User clicked OK - extract data here if needed
-        qDebug() << "New Sprite OK";
-        qDebug() << "Width : " << newSpriteDlg.getSpriteWidth();
-        qDebug() << "Height : " << newSpriteDlg.getSpriteHeight();
-        auto img = QSharedPointer<QImage>::create(newSpriteDlg.getSpriteWidth(), newSpriteDlg.getSpriteHeight(), QImage::Format_ARGB32);
-        img->fill(QColor(0, 0, 0, 0));
-        editarea->setNewSpriteImage(img);
-        //EditMode::setImage(QSharedPointer<QImage>::create(32, 32, QImage::Format_ARGB32));
-        //EditMode::image->fill(QColor(0, 0, 0, 0));
+}
+
+void MainWindow::on_actionOpenTrigger()
+{
+    qDebug() << "Load current sprite image";
+    // Open the file dialog
+    QString fileName = QFileDialog::getOpenFileName(
+        this,                           // Parent widget
+        tr("Open Document"),            // Dialog window title
+        ".",         // Starting directory
+        tr("png (*.png);;All Files (*.*)") // File filters
+        );
+
+    // Check if the user selected a file or cancelled
+    if (!fileName.isEmpty()) {
+        qDebug() << "Selected file path:" << fileName;
+        // Proceed with reading the file...
+        sprites->loadCurrentSprite(fileName);
 
     } else {
-        // User clicked Cancel or closed the window
-        qDebug() << "New Sprite Cancel";
+        qDebug() << "File selection cancelled.";
     }
 
 }
 
+void MainWindow::on_actionSaveTrigger()
+{
+    qDebug() << "Save current sprite image";
+    sprites->SaveCurrentSprite();
+
+}
+
+void MainWindow::on_actionSaveAsTrigger()
+{
+    qDebug() << "Save as current sprite image";
+    sprites->SaveAsCurrentSprite();
+}
 
 void MainWindow::on_actionLineTrigger()
 {

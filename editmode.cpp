@@ -4,7 +4,7 @@
 
 QColor EditMode::foregroundColor = Qt::blue;
 QColor EditMode::backgroundColor = QColor(0,0,0,0);
-QSharedPointer<QImage> EditMode::image = QSharedPointer<QImage>::create(32, 32, QImage::Format_ARGB32);
+QSharedPointer<SpriteImage> EditMode::image = QSharedPointer<SpriteImage>::create(32, 32, QImage::Format_ARGB32);
 QImage EditMode::image_bak = QImage(32, 32, QImage::Format_ARGB32);
 
 bool EditMode::fShiftKey = false;
@@ -43,7 +43,7 @@ QRect EditMode::Pixel2Rect(QPoint p)
 }
 
 
-void EditMode::setImage(QSharedPointer<QImage> new_image)
+void EditMode::setImage(QSharedPointer<SpriteImage> new_image)
 {
     image = new_image;
     image_bak = QImage(image->size(),image->format());

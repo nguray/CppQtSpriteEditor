@@ -5,6 +5,7 @@
 #include <QPainter>
 #include <QMouseEvent>
 #include <QPaintEvent>
+#include "spriteimage.h"
 
 class EditMode {
 
@@ -14,7 +15,7 @@ public:
 
     static QColor foregroundColor;
     static QColor backgroundColor;
-    static QSharedPointer<QImage> image;
+    static QSharedPointer<SpriteImage> image;
     static QImage image_bak;
     static Qt::CursorShape mousePointer;
 
@@ -31,7 +32,7 @@ public:
     static void   backupImage();
     static void   restoreImage();
 
-    static void setImage(QSharedPointer<QImage> image);
+    static void setImage(QSharedPointer<SpriteImage> image);
 
     virtual void init()=0;
     virtual void updateImage()=0;

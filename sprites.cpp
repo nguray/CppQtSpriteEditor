@@ -27,7 +27,7 @@ void Sprites::mousePressEvent(QMouseEvent *event)
         if (cellsRect.contains(p)){
             int iNewSelectCell = p.y()/cellSize;
             if (iNewSelectCell!=iSelectCell){
-                auto img = sprites[iNewSelectCell];
+                auto img = images[iNewSelectCell];
                 if (img==nullptr){
 
                     QMenu menu(this);
@@ -47,7 +47,7 @@ void Sprites::mousePressEvent(QMouseEvent *event)
 
                 }else{
                     iSelectCell = iNewSelectCell;
-                    emit spriteChanged(sprites[iSelectCell]);
+                    emit spriteChanged(images[iSelectCell]);
                     update();
                 }
             }
@@ -58,9 +58,9 @@ void Sprites::mousePressEvent(QMouseEvent *event)
 
 void Sprites::newSprite(int w, int h)
 {
-    auto spr = QSharedPointer<QImage>::create(32, 32, QImage::Format_ARGB32);
+    auto spr = QSharedPointer<SpriteImage>::create(w, h, QImage::Format_ARGB32);
     spr->fill(QColor(0, 0, 0, 0));
-    sprites[iSelectCell] = spr;
+    images[iSelectCell] = spr;
     emit spriteChanged(spr);
     update();
 }
@@ -81,6 +81,31 @@ void Sprites::newImageTriggered()
 
 }
 
+void Sprites::newCurrentSprite()
+{
+    NewSpriteDlg dlg(this);
+
+    if (dlg.exec() == QDialog::Accepted) {
+        // User clicked OK - extract data here if needed
+        qDebug() << "New Sprite OK";
+        newSprite(dlg.getSpriteWidth(), dlg.getSpriteHeight());
+    } else {
+        // User clicked Cancel or closed the window
+        qDebug() << "New Sprite Cancel";
+    }
+
+}
+
+void Sprites::loadCurrentSprite(QString fileName)
+{
+    auto spr = QSharedPointer<SpriteImage>::create();
+    spr->load( fileName);
+    images[iSelectCell] = spr;
+    spr->fileName = fileName;
+    emit spriteChanged(spr);
+    update();
+}
+
 void Sprites::loadImageTriggered()
 {
     // Open the file dialog
@@ -96,16 +121,53 @@ void Sprites::loadImageTriggered()
         qDebug() << "Selected file path:" << fileName;
         // Proceed with reading the file...
         iSelectCell = iSelectCellPopupMenu;
-        auto spr = QSharedPointer<QImage>::create();
-        spr->load( fileName);
-        sprites[iSelectCell] = spr;
-        emit spriteChanged(spr);
-        update();
+        loadCurrentSprite(fileName);
 
     } else {
         qDebug() << "File selection cancelled.";
     }
 
+}
+
+void Sprites::SaveCurrentSprite()
+{
+    if (images[iSelectCell]->fModified){
+        auto currentFileName = images[iSelectCell]->fileName;
+        if (currentFileName.isEmpty()){
+            SaveAsCurrentSprite();
+        }else{
+            auto spr = images[iSelectCell];
+            if (!spr.isNull()){
+                spr->save(currentFileName,"PNG");
+            }
+            spr->fModified = false;
+        }
+    }
+}
+
+void Sprites::SaveAsCurrentSprite()
+{
+    if (images[iSelectCell]->fModified){
+        QString filePath = QFileDialog::getSaveFileName(
+            this,
+            tr("Save File"),
+            "./untitled.png",
+            tr("png (*.png);;All Files (*)")
+            );
+
+        if (!filePath.isEmpty()) {
+            if (!filePath.endsWith(".PNG", Qt::CaseInsensitive)) {
+                filePath += ".png";
+                qDebug() << "Selected file path:" << filePath;
+            }
+            auto spr = images[iSelectCell];
+            if (!spr.isNull()){
+                spr->save(filePath,"PNG");
+                spr->fileName = filePath;
+                spr->fModified = false;
+            }
+        }
+    }
 }
 
 
@@ -183,7 +245,7 @@ void Sprites::drawSprites(QPainter *painter)
 {
     int imgWidth,imgHeight;
     int yTop = 0;
-    for (auto &img : sprites){
+    for (auto &img : images){
         if (!img.isNull()){
             imgWidth  = img->width();
             imgHeight = img->height();
@@ -209,7 +271,8 @@ void Sprites::paintEvent(QPaintEvent *event)
 
 }
 
-void Sprites::updateDisplay()
+void Sprites::on_imageChanged()
 {
+    images[iSelectCell]->fModified = true;
     update();
 }

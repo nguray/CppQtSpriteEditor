@@ -25,6 +25,7 @@ qt_add_executable(SpriteEditor
     cornerrect.h cornerrect.cpp
     newspritedlg.h newspritedlg.cpp newspritedlg.ui
     sprites.h sprites.cpp
+    spriteimage.h spriteimage.cpp
 )
 
 target_link_libraries(SpriteEditor

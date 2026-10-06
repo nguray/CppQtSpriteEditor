@@ -12,6 +12,7 @@
 #include "pencilmode.h"
 #include "rectanglemode.h"
 #include "ellipsemode.h"
+#include "spriteimage.h"
 
 
 class EditArea : public QWidget
@@ -33,7 +34,7 @@ public slots:
     void setForegroundColor(QColor newColor);
     void setBackgroundColor(QColor newColor);
     void toggleFlash();
-    void setNewSpriteImage(QSharedPointer<QImage> newImage);
+    void setNewSpriteImage(QSharedPointer<SpriteImage> newImage);
 
 
 signals:
