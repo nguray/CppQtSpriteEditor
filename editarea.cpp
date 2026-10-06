@@ -30,7 +30,6 @@ EditArea::EditArea(QWidget *parent)
     // painter.drawLine(QPoint(0,0), QPoint(31,31));
 
 
-
 }
 
 EditArea::~EditArea()
@@ -80,6 +79,7 @@ void EditArea::mousePressEvent(QMouseEvent *event)
     if (curEditMode->mousePressEvent(event)){
         update();
         emit(imageChanged());
+        updateSaveMenuItem();
     }
     // Change EditArea widget cursor if required
     if (cursor().shape()!=curEditMode->mousePointer){
@@ -95,6 +95,7 @@ void EditArea::mouseMoveEvent(QMouseEvent *event)
     if (curEditMode->mouseMoveEvent(event)){
         update();
         emit(imageChanged());
+        updateSaveMenuItem();
     }
 
     // Change EditArea widget cursor if required
@@ -192,9 +193,14 @@ void EditArea::paintEvent(QPaintEvent *event)
 
     drawPixels(&painter);
 
-    painter.drawImage(QRect(EditMode::image->size().width()*EditMode::cellSize+10,4,32,32), *EditMode::image, QRect(0,0,32,32));
+    if (!EditMode::image->isNull()){
+        int w = EditMode::image->size().width();
+        int h = EditMode::image->size().height();
+        painter.drawImage(QRect(w*EditMode::cellSize+10,4,w,h), *EditMode::image, EditMode::image->rect());
 
-    painter.drawImage(QRect(EditMode::image_bak.size().width()*EditMode::cellSize+10,64,32,32), EditMode::image_bak, QRect(0,0,32,32));
+        painter.drawImage(QRect(w*EditMode::cellSize+10,128,w,h), EditMode::image_bak, EditMode::image_bak.rect());
+
+    }
 
     //qDebug() << "EditArea Paint Event";
 
@@ -240,12 +246,19 @@ void EditArea::setBackgroundColor(QColor newColor) {
     update();
 }
 
+void EditArea::updateSaveMenuItem()
+{
+    bool fEnableSave = ((EditMode::image->fModified) && (!EditMode::image->fileName.isEmpty()));
+    emit(enableSave(fEnableSave));
+
+}
 
 void EditArea::setNewSpriteImage(QSharedPointer<SpriteImage> newImage)
 {
     curEditMode->init();
     EditMode::setImage(newImage);
     EditMode::backupImage();
+    updateSaveMenuItem();
     update();
 }
 

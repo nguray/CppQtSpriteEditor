@@ -103,6 +103,7 @@ void Sprites::loadCurrentSprite(QString fileName)
     images[iSelectCell] = spr;
     spr->fileName = fileName;
     emit spriteChanged(spr);
+    emit(enableSave(false));
     update();
 }
 
@@ -141,31 +142,35 @@ void Sprites::SaveCurrentSprite()
                 spr->save(currentFileName,"PNG");
             }
             spr->fModified = false;
+            emit(enableSave(false));
         }
     }
 }
 
 void Sprites::SaveAsCurrentSprite()
 {
-    if (images[iSelectCell]->fModified){
-        QString filePath = QFileDialog::getSaveFileName(
-            this,
-            tr("Save File"),
-            "./untitled.png",
-            tr("png (*.png);;All Files (*)")
-            );
+    auto spr = images[iSelectCell];
+    QString fileName = spr->fileName;
+    if (fileName.isEmpty()){
+        fileName = "./untitled.png";
+    }
+    QString filePath = QFileDialog::getSaveFileName(
+        this,
+        tr("Save File"),
+        fileName,
+        tr("png (*.png);;All Files (*)")
+        );
 
-        if (!filePath.isEmpty()) {
-            if (!filePath.endsWith(".PNG", Qt::CaseInsensitive)) {
-                filePath += ".png";
-                qDebug() << "Selected file path:" << filePath;
-            }
-            auto spr = images[iSelectCell];
-            if (!spr.isNull()){
-                spr->save(filePath,"PNG");
-                spr->fileName = filePath;
-                spr->fModified = false;
-            }
+    if (!filePath.isEmpty()) {
+        if (!filePath.endsWith(".PNG", Qt::CaseInsensitive)) {
+            filePath += ".png";
+            qDebug() << "Selected file path:" << filePath;
+        }
+        if (!spr.isNull()){
+            spr->save(filePath,"PNG");
+            spr->fileName = filePath;
+            spr->fModified = false;
+            emit(enableSave(false));
         }
     }
 }

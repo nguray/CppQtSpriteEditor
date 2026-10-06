@@ -21,6 +21,8 @@ public:
     ~MainWindow();
     void update_toolbar(QAction *selAction);
 
+public slots:
+
 private slots:
     void on_actionNewTrigger();
     void on_actionOpenTrigger();
@@ -29,6 +31,7 @@ private slots:
     void on_actionLineTrigger();
     void on_actionRectangleTrigger();
     void on_actionEllipseTrigger();
+    void handle_enable_save(bool fEnableSave);
 
 private:
     Ui::MainWindow *ui;

@@ -39,6 +39,7 @@ public slots:
 
 signals:
     void imageChanged();
+    void enableSave(bool fEnableSave);
 
 protected:
     void mousePressEvent(QMouseEvent *event) override;
@@ -54,7 +55,7 @@ private:
     void resizeImage(QImage *image, const QSize &newSize);
     void drawGrid(QPainter *painter);
     void drawPixels(QPainter *painter);
-
+    void updateSaveMenuItem();
 
     QTimer *m_timer;
 

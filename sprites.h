@@ -40,6 +40,7 @@ private slots:
 
 signals:
     void spriteChanged(QSharedPointer<SpriteImage> spr);
+    void enableSave(bool fEnableSave);
 
 
 protected:

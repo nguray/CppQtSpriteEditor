@@ -26,6 +26,8 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->actionSave_As, SIGNAL(triggered()),
             this,SLOT(on_actionSaveAsTrigger()));
 
+    ui->actionSave->setDisabled(true);
+
     connect(ui->actionLine, SIGNAL(triggered()),
             this,SLOT(on_actionLineTrigger()));
     connect(ui->actionRectangle, SIGNAL(triggered()),
@@ -62,6 +64,9 @@ MainWindow::MainWindow(QWidget *parent)
 
     palette->load(".","myPalette.txt");
 
+    connect(editarea,&EditArea::enableSave,this,&MainWindow::handle_enable_save);
+    connect(sprites,&Sprites::enableSave,this,&MainWindow::handle_enable_save);
+
 }
 
 MainWindow::~MainWindow()
@@ -72,6 +77,7 @@ MainWindow::~MainWindow()
         palette->save(".","myPalette.txt");
         delete palette;
     }
+    if (sprites) delete sprites;
 }
 
 void MainWindow::update_toolbar(QAction *selAction)
@@ -154,3 +160,10 @@ void MainWindow::on_actionEllipseTrigger()
     editarea->setEllipseMode();
 
 }
+
+void MainWindow::handle_enable_save(bool fEnableSave)
+{
+    ui->actionSave->setDisabled(!fEnableSave);
+}
+
+
