@@ -88,6 +88,16 @@ void EditArea::mousePressEvent(QMouseEvent *event)
 
 }
 
+void EditArea::mouseDoubleClickEvent(QMouseEvent *event) {
+    if (event->button() == Qt::LeftButton) {
+        // Handle left double-click
+        qDebug() << "Left mouse double-clicked at:" << event->pos();
+    }
+
+    // Always call the base class implementation if you want standard behavior
+    QWidget::mouseDoubleClickEvent(event);
+}
+
 void EditArea::mouseMoveEvent(QMouseEvent *event)
 {
     setFocus(Qt::MouseFocusReason);
@@ -160,17 +170,18 @@ void EditArea::drawGrid(QPainter *painter)
     int x,y;
     int xLeft = EditMode::margin;
     int yTop = EditMode::margin;
-    painter->setPen(QPen(myGridColor, 0.2, Qt::SolidLine, Qt::RoundCap,
+    painter->setPen(QPen(myGridColor, 0, Qt::SolidLine, Qt::RoundCap,
                 Qt::RoundJoin));
     for (int i=0;i<=EditMode::image->size().height();i++){
         for (int j=0;j<=EditMode::image->size().width();j++){
             x = xLeft + j * EditMode::cellSize;
             y = yTop + i * EditMode::cellSize;
 
+            painter->drawPoint(QPoint(x,y));
             //painter->drawRect(QRect(x+1,y+1,3,3));
             //painter->drawPoint(QPoint(x,y));
-            painter->drawLine(QPoint(x-2,y), QPoint(x+2,y));    
-            painter->drawLine(QPoint(x,y-2), QPoint(x,y+2));    
+            //painter->drawLine(QPoint(x-2,y), QPoint(x+2,y));
+            //painter->drawLine(QPoint(x,y-2), QPoint(x,y+2));
         }
     }
 
@@ -187,7 +198,7 @@ void EditArea::paintEvent(QPaintEvent *event)
     }
     EditMode::cellSize = (minDim-4) / EditMode::image->size().width();
 
-    painter.fillRect(r,QColor(220,200,220));
+    painter.fillRect(r,QColor(253,253,237));
 
     drawGrid(&painter);
 

@@ -4,6 +4,7 @@
 #include <QFileDialog>
 #include <QString>
 #include <QDebug>
+#include <QFileInfo>
 
 Sprites::Sprites(QWidget *parent)
     : QWidget{parent}
@@ -47,7 +48,10 @@ void Sprites::mousePressEvent(QMouseEvent *event)
 
                 }else{
                     iSelectCell = iNewSelectCell;
-                    emit spriteChanged(images[iSelectCell]);
+                    auto spr = images[iSelectCell];
+                    emit spriteChanged(spr);
+                    QString filename = QFileInfo(spr->fileName).fileName();
+                    emit(fileNameChanged(filename));
                     update();
                 }
             }
@@ -62,6 +66,7 @@ void Sprites::newSprite(int w, int h)
     spr->fill(QColor(0, 0, 0, 0));
     images[iSelectCell] = spr;
     emit spriteChanged(spr);
+    emit(fileNameChanged(""));
     update();
 }
 
@@ -96,14 +101,17 @@ void Sprites::newCurrentSprite()
 
 }
 
-void Sprites::loadCurrentSprite(QString fileName)
+void Sprites::loadCurrentSprite(QString fullPathName)
 {
     auto spr = QSharedPointer<SpriteImage>::create();
-    spr->load( fileName);
+    spr->load( fullPathName);
     images[iSelectCell] = spr;
-    spr->fileName = fileName;
+    spr->fileName = fullPathName;
     emit spriteChanged(spr);
     emit(enableSave(false));
+    QString filename = QFileInfo(fullPathName).fileName();
+    emit(fileNameChanged(filename));
+    qDebug() << "FileName : " << filename;
     update();
 }
 
@@ -143,6 +151,8 @@ void Sprites::SaveCurrentSprite()
             }
             spr->fModified = false;
             emit(enableSave(false));
+            //QString filename = QFileInfo(currentFileName).fileName();
+            //emit(fileNameChanged(filename));
         }
     }
 }
@@ -171,6 +181,8 @@ void Sprites::SaveAsCurrentSprite()
             spr->fileName = filePath;
             spr->fModified = false;
             emit(enableSave(false));
+            QString filename = QFileInfo(spr->fileName).fileName();
+            emit(fileNameChanged(filename));
         }
     }
 }
@@ -266,7 +278,7 @@ void Sprites::paintEvent(QPaintEvent *event)
     QPainter painter(this);
 
     QRect r = event->rect();
-    painter.fillRect(r,QColor(200,200,200));
+    painter.fillRect(r,QColor(246,246,240));
 
     drawCells(&painter);
 

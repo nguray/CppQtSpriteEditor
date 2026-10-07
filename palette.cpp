@@ -2,6 +2,9 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
+//#include <QColorDialog>
+#include "qcolorpicker.h"
+
 
 Palette::Palette(QWidget *parent)
     : QWidget(parent)
@@ -64,6 +67,40 @@ void Palette::mousePressEvent(QMouseEvent *event)
 
 }
 
+void Palette::mouseDoubleClickEvent(QMouseEvent *event) {
+    if (event->button() == Qt::LeftButton) {
+        QPoint p = event->position().toPoint();
+
+        // Handle left double-click
+        qDebug() << "Left mouse double-clicked at:" << event->pos();
+
+        if (auto cr = hitColors(p) ){
+
+
+            QColorPicker picker(this);
+            picker.setColor(cr->getColor());
+
+            if (picker.exec() == QDialog::Accepted) {
+                QColor color = picker.color();
+                cr->setColor(color);
+                qDebug() << "Linux user picked color:" << color.name();
+            }
+
+
+            // QColorDialog::ColorDialogOptions options = QColorDialog::ShowAlphaChannel; // enables transparency slider
+            // QColor color = QColorDialog::getColor(Qt::white, this, tr("Select Color"), options);
+
+            // if (color.isValid()) {
+            //     // Apply the selected color, e.g., to a widget background or text
+            //     cr->setColor(color);
+            // }
+        }
+    }
+
+    // Always call the base class implementation if you want standard behavior
+    QWidget::mouseDoubleClickEvent(event);
+}
+
 
 void Palette::mouseMoveEvent(QMouseEvent *event)
 {
@@ -90,7 +127,7 @@ void Palette::paintEvent(QPaintEvent *event)
     QPainter painter(this);
 
     QRect r = event->rect();
-    painter.fillRect(r,QColor(200,220,220));
+    painter.fillRect(r,QColor(246,246,240));
 
     painter.setPen(QPen(myGridColor, 0.5, Qt::SolidLine, Qt::RoundCap,
                 Qt::RoundJoin));

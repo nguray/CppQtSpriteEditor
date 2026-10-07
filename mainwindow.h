@@ -32,6 +32,7 @@ private slots:
     void on_actionRectangleTrigger();
     void on_actionEllipseTrigger();
     void handle_enable_save(bool fEnableSave);
+    void display_filename(QString fileName);
 
 private:
     Ui::MainWindow *ui;

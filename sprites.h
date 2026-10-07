@@ -41,6 +41,7 @@ private slots:
 signals:
     void spriteChanged(QSharedPointer<SpriteImage> spr);
     void enableSave(bool fEnableSave);
+    void fileNameChanged(QString fileName);
 
 
 protected:

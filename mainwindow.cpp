@@ -66,11 +66,15 @@ MainWindow::MainWindow(QWidget *parent)
 
     connect(editarea,&EditArea::enableSave,this,&MainWindow::handle_enable_save);
     connect(sprites,&Sprites::enableSave,this,&MainWindow::handle_enable_save);
+    connect(sprites,&Sprites::fileNameChanged,this,&MainWindow::display_filename);
 
 }
 
 MainWindow::~MainWindow()
 {
+
+    palette->save(".","myPalette.txt");
+
     if (ui) delete ui;
     if (editarea) delete editarea;
     if (palette){
@@ -166,4 +170,12 @@ void MainWindow::handle_enable_save(bool fEnableSave)
     ui->actionSave->setDisabled(!fEnableSave);
 }
 
+void MainWindow::display_filename(QString fileName)
+{
+    QString title("SpriteEditor");
+    if (!fileName.isEmpty()){
+        title += " : " + fileName;
+    }
+    this->setWindowTitle(title);
+}
 

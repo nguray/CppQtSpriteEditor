@@ -26,6 +26,7 @@ qt_add_executable(SpriteEditor
     newspritedlg.h newspritedlg.cpp newspritedlg.ui
     sprites.h sprites.cpp
     spriteimage.h spriteimage.cpp
+    qcolorpicker.cpp qcolorpicker_slider.cpp qcolorpicker_slider.h qcolorpicker.h
 )
 
 target_link_libraries(SpriteEditor
