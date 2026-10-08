@@ -36,11 +36,9 @@ private:
     QColorPickerSlider* saturationSlider;
     QColorPickerSlider* brightnessSlider;
     QColorPickerSlider* alphaSlider;
-
-    QLabel* hueLabel;
-    QLabel* saturationLabel;
-    QLabel* brightnessLabel;
-    QLabel* alphaLabel;
+    QLabel* redVal;
+    QLabel* greenVal;
+    QLabel* blueVal;
 
     QLabel* finalColorPreview;
     QLabel* hexCodeLabel;

@@ -1,6 +1,7 @@
 #include <QBoxLayout>
 #include <QGridLayout>
 #include <QLabel>
+#include <QSpacerItem>
 #include <QLineEdit>
 #include <QLinearGradient>
 #include <QPainter>
@@ -13,11 +14,12 @@
 QColorPicker::QColorPicker(QWidget* parent)
     : QDialog(parent)
 {
+
     QBoxLayout* mainLayout = new QVBoxLayout(this);
-    mainLayout->setContentsMargins(0, 0, 0, 0);
+    mainLayout->setContentsMargins(5, 5, 5, 0);
 
     finalColorPreview = new QLabel();
-    finalColorPreview->setMinimumSize(100, 100);
+    finalColorPreview->setMinimumSize(400, 100);
     mainLayout->addWidget(finalColorPreview);
 
     QBoxLayout* layout = new QVBoxLayout();
@@ -37,10 +39,23 @@ QColorPicker::QColorPicker(QWidget* parent)
     brightnessSlider = new QColorPickerSlider(Qt::Horizontal);
     alphaSlider = new QColorPickerSlider(Qt::Horizontal);
 
-    hueLabel = new QLabel;
-    saturationLabel = new QLabel;
-    brightnessLabel = new QLabel;
-    alphaLabel = new QLabel;
+    QLabel* hueLab = new QLabel("Hue:");
+    QLabel* hueVal = new QLabel;
+
+    QLabel* saturationLab = new QLabel("Saturation:");
+    QLabel* saturationVal = new QLabel;
+    QLabel* brightnessLab = new QLabel("Brightness:");
+    QLabel* brightnessVal = new QLabel;
+    QLabel* alphaLab = new QLabel("Alpĥa:");
+    QLabel* alphaVal = new QLabel;
+
+    QLabel* redLab = new QLabel("Red:");
+    QLabel* greenLab = new QLabel("Green:");
+    QLabel* blueLab = new QLabel("Blue:");
+    redVal = new QLabel;
+    greenVal = new QLabel;
+    blueVal = new QLabel;
+
 
     // auto updateColor = [ = ]() {
     //     QColor color;
@@ -57,7 +72,7 @@ QColorPicker::QColorPicker(QWidget* parent)
 
 
     connect(hueSlider, &QSlider::valueChanged, this, [ = ](int value) {
-        hueLabel->setText(QString::number(value));
+        hueVal->setText(QString::number(value));
         saturationSlider->setGradientStops({
             {  0.0 / 255.0, QColor::fromHsv(value,   0, 255)},
             {255.0 / 255.0, QColor::fromHsv(value, 255, 255)}
@@ -73,39 +88,56 @@ QColorPicker::QColorPicker(QWidget* parent)
         updateColor();
     });
     connect(saturationSlider, &QSlider::valueChanged, this, [ = ](int value) {
-        saturationLabel->setText(QString::number(value));
+        saturationVal->setText(QString::number(value));
         updateColor();
     });
     connect(brightnessSlider, &QSlider::valueChanged, this, [ = ](int value) {
-        brightnessLabel->setText(QString::number(value));
+        brightnessVal->setText(QString::number(value));
         updateColor();
     });
     connect(alphaSlider, &QSlider::valueChanged, this, [ = ](int value) {
-        alphaLabel->setText(QString::number(value));
+        alphaVal->setText(QString::number(value));
         updateColor();
     });
 
-    hueLabel->setText(QString::number(hueSlider->value()));
-    saturationLabel->setText(QString::number(saturationSlider->value()));
-    brightnessLabel->setText(QString::number(brightnessSlider->value()));
-    alphaLabel->setText(QString::number(alphaSlider->value()));
+    hueVal->setText(QString::number(hueSlider->value()));
+    saturationVal->setText(QString::number(saturationSlider->value()));
+    brightnessVal->setText(QString::number(brightnessSlider->value()));
+    alphaVal->setText(QString::number(alphaSlider->value()));
 
-    hueLabel->setMinimumSize(hueLabel->fontMetrics().boundingRect("000").size()
+    hueVal->setMinimumSize(hueVal->fontMetrics().boundingRect("000").size()
     );
-    saturationLabel->setMinimumSize(
-        saturationLabel->fontMetrics().boundingRect("000").size()
+    saturationVal->setMinimumSize(
+        saturationVal->fontMetrics().boundingRect("000").size()
     );
-    brightnessLabel->setMinimumSize(
-        brightnessLabel->fontMetrics().boundingRect("000").size()
+    brightnessVal->setMinimumSize(
+        brightnessVal->fontMetrics().boundingRect("000").size()
     );
-    alphaLabel->setMinimumSize(
-        alphaLabel->fontMetrics().boundingRect("000").size()
+    alphaVal->setMinimumSize(
+        alphaVal->fontMetrics().boundingRect("000").size()
     );
 
-    hueLabel->setAlignment(Qt::AlignRight);
-    saturationLabel->setAlignment(Qt::AlignRight);
-    brightnessLabel->setAlignment(Qt::AlignRight);
-    alphaLabel->setAlignment(Qt::AlignRight);
+
+    hueVal->setAlignment(Qt::AlignRight);
+    saturationVal->setAlignment(Qt::AlignRight);
+    brightnessVal->setAlignment(Qt::AlignRight);
+    alphaVal->setAlignment(Qt::AlignRight);
+
+
+    redVal->setMinimumSize(
+        redVal->fontMetrics().boundingRect("0000").size()
+                           );
+    greenVal->setMinimumSize(
+        greenVal->fontMetrics().boundingRect("0000").size()
+        );
+    blueVal->setMinimumSize(
+        blueVal->fontMetrics().boundingRect("0000").size()
+        );
+
+    redVal->setAlignment(Qt::AlignRight);
+    greenVal->setAlignment(Qt::AlignRight);
+    blueVal->setAlignment(Qt::AlignRight);
+
 
     hueSlider->setRange(0, 359);
     hueSlider->setGradientStops({
@@ -141,14 +173,32 @@ QColorPicker::QColorPicker(QWidget* parent)
     brightnessSlider->setValue(255);
     alphaSlider->setValue(255);
 
-    colorSliders->addWidget(hueSlider, 0, 0);
-    colorSliders->addWidget(hueLabel, 0, 1);
-    colorSliders->addWidget(brightnessSlider, 2, 0);
-    colorSliders->addWidget(brightnessLabel, 2, 1);
-    colorSliders->addWidget(saturationSlider, 1, 0);
-    colorSliders->addWidget(saturationLabel, 1, 1);
-    colorSliders->addWidget(alphaSlider, 3, 0);
-    colorSliders->addWidget(alphaLabel, 3, 1);
+    colorSliders->setColumnMinimumWidth(3, 20);
+
+    colorSliders->addWidget(hueLab, 0, 0);
+    colorSliders->addWidget(hueSlider, 0, 1);
+    colorSliders->addWidget(hueVal, 0, 2);
+    colorSliders->addWidget(redLab, 0, 4);
+    colorSliders->addWidget(redVal, 0, 5);
+
+
+    colorSliders->addWidget(brightnessLab, 2, 0);
+    colorSliders->addWidget(brightnessSlider, 2, 1);
+    colorSliders->addWidget(brightnessVal, 2, 2);
+    colorSliders->addWidget(blueLab, 2, 4);
+    colorSliders->addWidget(blueVal, 2, 5);
+
+    colorSliders->addWidget(saturationLab, 1, 0);
+    colorSliders->addWidget(saturationSlider, 1, 1);
+    colorSliders->addWidget(saturationVal, 1, 2);
+    colorSliders->addWidget(greenLab, 1, 4);
+    colorSliders->addWidget(greenVal, 1, 5);
+
+
+
+    colorSliders->addWidget(alphaLab, 3, 0);
+    colorSliders->addWidget(alphaSlider, 3, 1);
+    colorSliders->addWidget(alphaVal, 3, 2);
 
     layout->addLayout(colorSliders);
 
@@ -168,18 +218,13 @@ QColorPicker::QColorPicker(QWidget* parent)
 
 QColorPicker::~QColorPicker()
 {
-    if (hueSlider) delete hueSlider;
-    if (saturationSlider) delete saturationSlider;
-    if (brightnessSlider) delete brightnessSlider;
-    if (alphaSlider) delete alphaSlider;
+    // if (hueSlider) delete hueSlider;
+    // if (saturationSlider) delete saturationSlider;
+    // if (brightnessSlider) delete brightnessSlider;
+    // if (alphaSlider) delete alphaSlider;
 
-    if (hueLabel) delete hueLabel;
-    if (saturationLabel) delete saturationLabel;
-    if (brightnessLabel) delete brightnessLabel;
-    if (alphaLabel) delete alphaLabel;
-
-    if (finalColorPreview) delete finalColorPreview;
-    if (hexCodeLabel) delete hexCodeLabel;
+    // if (finalColorPreview) delete finalColorPreview;
+    // if (hexCodeLabel) delete hexCodeLabel;
 
 }
 
@@ -194,6 +239,13 @@ void QColorPicker::updateColor() {
         brightnessSlider->value(),
         alphaSlider->value()
         );
+
+    int r,g,b;
+    color.getRgb(&r,&g,&b);
+    redVal->setText(QString::number(r));
+    greenVal->setText(QString::number(g));
+    blueVal->setText(QString::number(b));
+
     finalColorPreview->setStyleSheet("background-color: " + color.name());
     hexCodeLabel->setText(color.name());
     _selectedColor = color;
@@ -209,19 +261,12 @@ void QColorPicker::setColor(QColor c)
     int h,s,b,a;
     c.getHsv(&h,&s,&b,&a);
 
-
     hueSlider->setValue(h);
     saturationSlider->setValue(s);
     brightnessSlider->setValue(b);
     alphaSlider->setValue(a);
 
-    // hueLabel->setText(QString::number(h));
-    // saturationLabel->setText(QString::number(s));
-    // brightnessLabel->setText(QString::number(b));
-    // alphaLabel->setText(QString::number(a));
-
     updateColor();
-
 
 }
 
