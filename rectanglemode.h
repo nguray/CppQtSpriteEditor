@@ -2,8 +2,8 @@
 #define RECTANGLEMODE_H
 
 #include "editmode.h"
-#include "selectrect.h"
 #include <QPainter>
+#include "selectrect.h"
 
 class RectangleMode : public EditMode
 {

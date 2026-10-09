@@ -18,6 +18,7 @@ EditArea::EditArea(QWidget *parent)
     pencilMode = new PencilMode();
     rectangleMode = new RectangleMode();
     ellipseMode = new EllipseMode();
+    selectRectMode = new SelectRectMode();
 
     setPencilMode();
 
@@ -37,6 +38,7 @@ EditArea::~EditArea()
     if (pencilMode) delete pencilMode;
     if (rectangleMode) delete rectangleMode;
     if (ellipseMode) delete ellipseMode;
+    if (selectRectMode) delete selectRectMode;
 
 }
 
@@ -270,6 +272,13 @@ void EditArea::setNewSpriteImage(QSharedPointer<SpriteImage> newImage)
     EditMode::setImage(newImage);
     EditMode::backupImage();
     updateSaveMenuItem();
+    update();
+}
+
+void EditArea::setSelectRectMode()
+{
+    curEditMode = selectRectMode;
+    curEditMode->init();
     update();
 }
 

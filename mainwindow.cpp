@@ -28,6 +28,8 @@ MainWindow::MainWindow(QWidget *parent)
 
     ui->actionSave->setDisabled(true);
 
+    connect(ui->actionSelection_rect, SIGNAL(triggered()),
+            this,SLOT(on_actionSelectRectTrigger()));
     connect(ui->actionLine, SIGNAL(triggered()),
             this,SLOT(on_actionLineTrigger()));
     connect(ui->actionRectangle, SIGNAL(triggered()),
@@ -36,6 +38,7 @@ MainWindow::MainWindow(QWidget *parent)
             this,SLOT(on_actionEllipseTrigger()));
 
     nbToolbarActions = 0;
+    toolbarActions[nbToolbarActions++] = ui->actionSelection_rect;
     toolbarActions[nbToolbarActions++] = ui->actionLine;
     toolbarActions[nbToolbarActions++] = ui->actionRectangle;
     toolbarActions[nbToolbarActions++] = ui->actionEllipse;
@@ -119,6 +122,8 @@ void MainWindow::on_actionOpenTrigger()
         // Proceed with reading the file...
         sprites->loadCurrentSprite(fileName);
 
+        statusBar()->showMessage("Image loaded ...");
+
     } else {
         qDebug() << "File selection cancelled.";
     }
@@ -129,6 +134,7 @@ void MainWindow::on_actionSaveTrigger()
 {
     qDebug() << "Save current sprite image";
     sprites->SaveCurrentSprite();
+    statusBar()->showMessage("Image saved");
 
 }
 
@@ -138,12 +144,22 @@ void MainWindow::on_actionSaveAsTrigger()
     sprites->SaveAsCurrentSprite();
 }
 
+
+void MainWindow::on_actionSelectRectTrigger()
+{
+    update_toolbar(ui->actionSelection_rect);
+
+    editarea->setSelectRectMode();
+    statusBar()->showMessage("Select rectangle mode");
+
+}
+
 void MainWindow::on_actionLineTrigger()
 {
     update_toolbar(ui->actionLine);
 
-    qDebug() << "Draw Line mode";
     editarea->setPencilMode();
+    statusBar()->showMessage("Pencil mode");
 
 }
 
@@ -151,8 +167,8 @@ void MainWindow::on_actionRectangleTrigger()
 {
     update_toolbar(ui->actionRectangle);
 
-    qDebug() << "Draw Rectangle mode";
     editarea->setRectangleMode();
+    statusBar()->showMessage("Draw rectangle mode");
 
 }
 
@@ -160,8 +176,8 @@ void MainWindow::on_actionEllipseTrigger()
 {
     update_toolbar(ui->actionEllipse);
 
-    qDebug() << "Draw Ellipse mode";
     editarea->setEllipseMode();
+    statusBar()->showMessage("Draw ellipse mode");
 
 }
 

@@ -2,7 +2,6 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
-//#include <QColorDialog>
 #include "qcolorpicker.h"
 
 
@@ -53,8 +52,16 @@ void Palette::mousePressEvent(QMouseEvent *event)
     QPoint p = event->position().toPoint();
     if (event->button() == Qt::LeftButton){
         if (auto cr = hitColors(p) ){
+            // Select foreground color
             foreGroundColor.setColor(cr->getColor());
             emit foreGroundColorChanged(cr->getColor());
+            update();
+        }else if (p.x()<2*cellSize){
+            //-- Swap foreground <-> background
+            auto c = backGroundColor.getColor();
+            backGroundColor.setColor(foreGroundColor.getColor());
+            foreGroundColor.setColor(c);
+            emit foreGroundColorChanged(c);
             update();
         }
     }else if (event->button() == Qt::RightButton){
@@ -76,7 +83,6 @@ void Palette::mouseDoubleClickEvent(QMouseEvent *event) {
 
         if (auto cr = hitColors(p) ){
 
-
             QColorPicker picker(this);
             picker.setColor(cr->getColor());
 
@@ -86,14 +92,6 @@ void Palette::mouseDoubleClickEvent(QMouseEvent *event) {
                 qDebug() << "Linux user picked color:" << color.name();
             }
 
-
-            // QColorDialog::ColorDialogOptions options = QColorDialog::ShowAlphaChannel; // enables transparency slider
-            // QColor color = QColorDialog::getColor(Qt::white, this, tr("Select Color"), options);
-
-            // if (color.isValid()) {
-            //     // Apply the selected color, e.g., to a widget background or text
-            //     cr->setColor(color);
-            // }
         }
     }
 

@@ -117,7 +117,6 @@ QColorPicker::QColorPicker(QWidget* parent)
         alphaVal->fontMetrics().boundingRect("000").size()
     );
 
-
     hueVal->setAlignment(Qt::AlignRight);
     saturationVal->setAlignment(Qt::AlignRight);
     brightnessVal->setAlignment(Qt::AlignRight);
@@ -194,8 +193,6 @@ QColorPicker::QColorPicker(QWidget* parent)
     colorSliders->addWidget(greenLab, 1, 4);
     colorSliders->addWidget(greenVal, 1, 5);
 
-
-
     colorSliders->addWidget(alphaLab, 3, 0);
     colorSliders->addWidget(alphaSlider, 3, 1);
     colorSliders->addWidget(alphaVal, 3, 2);
@@ -213,7 +210,8 @@ QColorPicker::QColorPicker(QWidget* parent)
     buttons->addWidget(cancelButton);
     layout->addLayout(buttons);
 
-    //updateColor();
+    updateColor();
+
 }
 
 QColorPicker::~QColorPicker()

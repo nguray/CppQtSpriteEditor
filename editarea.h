@@ -12,6 +12,7 @@
 #include "pencilmode.h"
 #include "rectanglemode.h"
 #include "ellipsemode.h"
+#include "selectrectmode.h"
 #include "spriteimage.h"
 
 
@@ -25,6 +26,7 @@ public:
     EditArea(QWidget *parent = nullptr);
     ~EditArea();
 
+    void setSelectRectMode();
     void setPencilMode();
     void setRectangleMode();
     void setEllipseMode();
@@ -70,5 +72,6 @@ private:
     PencilMode      *pencilMode;
     RectangleMode   *rectangleMode;
     EllipseMode     *ellipseMode;
+    SelectRectMode  *selectRectMode;
 
 };

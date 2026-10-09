@@ -28,6 +28,7 @@ private slots:
     void on_actionOpenTrigger();
     void on_actionSaveTrigger();
     void on_actionSaveAsTrigger();
+    void on_actionSelectRectTrigger();
     void on_actionLineTrigger();
     void on_actionRectangleTrigger();
     void on_actionEllipseTrigger();

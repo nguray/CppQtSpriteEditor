@@ -101,6 +101,7 @@
    <attribute name="toolBarBreak">
     <bool>false</bool>
    </attribute>
+   <addaction name="actionSelection_rect"/>
    <addaction name="actionLine"/>
    <addaction name="actionRectangle"/>
    <addaction name="actionEllipse"/>
@@ -201,6 +202,21 @@
   <action name="actionAbout_SpriteEditor">
    <property name="text">
     <string>About SpriteEditor</string>
+   </property>
+  </action>
+  <action name="actionSelection_rect">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="spriteeditor.qrc">
+     <normaloff>:/icons/rectangle_select.png</normaloff>:/icons/rectangle_select.png</iconset>
+   </property>
+   <property name="text">
+    <string>Rectangle selection</string>
+   </property>
+   <property name="menuRole">
+    <enum>QAction::MenuRole::NoRole</enum>
    </property>
   </action>
  </widget>
