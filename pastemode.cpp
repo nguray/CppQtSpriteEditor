@@ -1,8 +1,10 @@
 /*--------------------------------------------------------------*\
- *
- *
- *
- *
+  FILE........: pastemode.cpp
+  AUTHOR......: Raymond NGUYEN THANH
+  DATE CREATED: 31.10.2026
+  DESCRIPTION :
+  PasteMode class implementation for SpriteEditor.
+  This class handles the paste action,
 \*--------------------------------------------------------------*/
 
 #include "pastemode.h"
