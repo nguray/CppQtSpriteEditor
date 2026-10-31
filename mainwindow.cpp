@@ -17,6 +17,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     ui->setupUi(this);
 
+    // File Menu actions
     connect(ui->actionNew, SIGNAL(triggered()),
             this,SLOT(on_actionNewTrigger()));
     connect(ui->actionOpen, SIGNAL(triggered()),
@@ -26,12 +27,21 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->actionSave_As, SIGNAL(triggered()),
             this,SLOT(on_actionSaveAsTrigger()));
 
+    // Edit Menu actions
+    connect(ui->actionCopy, SIGNAL(triggered()),
+            this,SLOT(on_actionCopyTrigger()));
+    connect(ui->actionCut, SIGNAL(triggered()),
+            this,SLOT(on_actionCutTrigger()));
+    connect(ui->actionPaste, SIGNAL(triggered()),
+            this,SLOT(on_actionPasteTrigger()));
+
     ui->actionSave->setDisabled(true);
 
+    // ToolBar actions
     connect(ui->actionSelection_rect, SIGNAL(triggered()),
             this,SLOT(on_actionSelectRectTrigger()));
-    connect(ui->actionLine, SIGNAL(triggered()),
-            this,SLOT(on_actionLineTrigger()));
+    connect(ui->actionPencil, SIGNAL(triggered()),
+            this,SLOT(on_actionPencilTrigger()));
     connect(ui->actionRectangle, SIGNAL(triggered()),
             this,SLOT(on_actionRectangleTrigger()));
     connect(ui->actionEllipse, SIGNAL(triggered()),
@@ -39,7 +49,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     nbToolbarActions = 0;
     toolbarActions[nbToolbarActions++] = ui->actionSelection_rect;
-    toolbarActions[nbToolbarActions++] = ui->actionLine;
+    toolbarActions[nbToolbarActions++] = ui->actionPencil;
     toolbarActions[nbToolbarActions++] = ui->actionRectangle;
     toolbarActions[nbToolbarActions++] = ui->actionEllipse;
 
@@ -59,7 +69,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(editarea,&EditArea::imageChanged,sprites,&Sprites::on_imageChanged);
 
 
-    sprites->newSprite(32,32);
+    sprites->newSprite(64,64);
 
 
     connect(palette, &Palette::foreGroundColorChanged, editarea,
@@ -70,6 +80,8 @@ MainWindow::MainWindow(QWidget *parent)
     connect(editarea,&EditArea::enableSave,this,&MainWindow::handle_enable_save);
     connect(sprites,&Sprites::enableSave,this,&MainWindow::handle_enable_save);
     connect(sprites,&Sprites::fileNameChanged,this,&MainWindow::display_filename);
+
+    on_actionPencilTrigger();
 
 }
 
@@ -96,7 +108,8 @@ void MainWindow::update_toolbar(QAction *selAction)
             a->setChecked(false);
         }
     }
-    selAction->setDisabled(true);
+    selAction->setDisabled(false);
+    selAction->setChecked(true);
 }
 
 void MainWindow::on_actionNewTrigger()
@@ -144,6 +157,24 @@ void MainWindow::on_actionSaveAsTrigger()
     sprites->SaveAsCurrentSprite();
 }
 
+void MainWindow::on_actionCopyTrigger()
+{
+    if (editarea->isInSelectRectMode()){
+        editarea->doCopyRectangle();
+    }
+}
+
+void MainWindow::on_actionCutTrigger()
+{
+    if (editarea->isInSelectRectMode()){
+        editarea->doCutRectangle();
+    }
+}
+
+void MainWindow::on_actionPasteTrigger()
+{
+    editarea->doPaste();
+}
 
 void MainWindow::on_actionSelectRectTrigger()
 {
@@ -154,9 +185,9 @@ void MainWindow::on_actionSelectRectTrigger()
 
 }
 
-void MainWindow::on_actionLineTrigger()
+void MainWindow::on_actionPencilTrigger()
 {
-    update_toolbar(ui->actionLine);
+    update_toolbar(ui->actionPencil);
 
     editarea->setPencilMode();
     statusBar()->showMessage("Pencil mode");

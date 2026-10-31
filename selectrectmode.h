@@ -11,7 +11,6 @@ public:
     SelectRectMode();
     ~SelectRectMode();
 
-
     void init();
     void updateImage();
     bool mousePressEvent(QMouseEvent *event);
@@ -21,7 +20,6 @@ public:
 
 private:
     CornerRect *selCorner=NULL;
-    SelectRect  selectRect;
     bool fMoveSelectRect = false;
     bool fDoNotDrawHandles = false;
     QPoint startPt;

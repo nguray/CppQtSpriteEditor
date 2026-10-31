@@ -2,24 +2,36 @@
 #include "editmode.h"
 
 
-QColor EditMode::foregroundColor = Qt::blue;
+QColor EditMode::foregroundColor = Qt::black;
 QColor EditMode::backgroundColor = QColor(0,0,0,0);
 QSharedPointer<SpriteImage> EditMode::image = QSharedPointer<SpriteImage>::create(32, 32, QImage::Format_ARGB32);
 QImage EditMode::image_bak = QImage(32, 32, QImage::Format_ARGB32);
+QImage *EditMode::image_cpy = nullptr;
 
 bool EditMode::fShiftKey = false;
 int EditMode::margin = 4; 
 int EditMode::cellSize = 10;
 Qt::CursorShape EditMode::mousePointer = Qt::ArrowCursor;
 
+SelectRect  *EditMode::selectRect = nullptr;
+
 
 EditMode::EditMode()
 {
-
+    selectRect = new SelectRect();
 }
 
 EditMode::~EditMode()
 {
+    if (image_cpy!=nullptr){
+        delete image_cpy;
+        image_cpy = nullptr;
+    }
+
+    if (selectRect){
+        delete selectRect;
+        selectRect = nullptr;
+    }
 
 }
 

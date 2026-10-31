@@ -18,6 +18,7 @@ SelectRect::~SelectRect()
     for (auto i=0;i<4;i++){
         if (auto c = corners[i]){
             delete c;
+            corners[i] = nullptr;
         }
     }
 }

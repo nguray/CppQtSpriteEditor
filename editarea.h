@@ -26,6 +26,7 @@ public:
     EditArea(QWidget *parent = nullptr);
     ~EditArea();
 
+    bool isInSelectRectMode();
     void setSelectRectMode();
     void setPencilMode();
     void setRectangleMode();
@@ -37,6 +38,9 @@ public slots:
     void setBackgroundColor(QColor newColor);
     void toggleFlash();
     void setNewSpriteImage(QSharedPointer<SpriteImage> newImage);
+    void doCopyRectangle();
+    void doCutRectangle();
+    void doPaste();
 
 
 signals:

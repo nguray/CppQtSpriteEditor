@@ -28,8 +28,12 @@ private slots:
     void on_actionOpenTrigger();
     void on_actionSaveTrigger();
     void on_actionSaveAsTrigger();
+    void on_actionCopyTrigger();
+    void on_actionCutTrigger();
+    void on_actionPasteTrigger();
+
     void on_actionSelectRectTrigger();
-    void on_actionLineTrigger();
+    void on_actionPencilTrigger();
     void on_actionRectangleTrigger();
     void on_actionEllipseTrigger();
     void handle_enable_save(bool fEnableSave);

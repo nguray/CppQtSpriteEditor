@@ -42,6 +42,11 @@ EditArea::~EditArea()
 
 }
 
+bool EditArea::isInSelectRectMode()
+{
+    return curEditMode==selectRectMode;
+}
+
 void EditArea::toggleFlash()
 {
     pencilMode->toggleFlash();
@@ -275,6 +280,21 @@ void EditArea::setNewSpriteImage(QSharedPointer<SpriteImage> newImage)
     update();
 }
 
+void EditArea::doCopyRectangle()
+{
+    qDebug() << "Copy Select Rectangle";
+}
+
+void EditArea::doCutRectangle()
+{
+    qDebug() << "Cut Select Rectangle";
+}
+
+void EditArea::doPaste()
+{
+    qDebug() << "Paste image";
+}
+
 void EditArea::setSelectRectMode()
 {
     curEditMode = selectRectMode;
@@ -302,4 +322,5 @@ void EditArea::setEllipseMode()
     curEditMode->init();
     update();
 }
+
 

@@ -102,7 +102,7 @@
     <bool>false</bool>
    </attribute>
    <addaction name="actionSelection_rect"/>
-   <addaction name="actionLine"/>
+   <addaction name="actionPencil"/>
    <addaction name="actionRectangle"/>
    <addaction name="actionEllipse"/>
   </widget>
@@ -131,7 +131,7 @@
     <string>Quit</string>
    </property>
   </action>
-  <action name="actionLine">
+  <action name="actionPencil">
    <property name="checkable">
     <bool>true</bool>
    </property>
@@ -140,10 +140,10 @@
      <normaloff>:/icons/layer-shape-polyline.png</normaloff>:/icons/layer-shape-polyline.png</iconset>
    </property>
    <property name="text">
-    <string>Line</string>
+    <string>Pencil</string>
    </property>
    <property name="toolTip">
-    <string>Draw Line</string>
+    <string>Pencil</string>
    </property>
    <property name="menuRole">
     <enum>QAction::MenuRole::NoRole</enum>

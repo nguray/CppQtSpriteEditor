@@ -6,6 +6,7 @@
 #include <QMouseEvent>
 #include <QPaintEvent>
 #include "spriteimage.h"
+#include "selectrect.h"
 
 class EditMode {
 
@@ -16,8 +17,11 @@ public:
     static QColor foregroundColor;
     static QColor backgroundColor;
     static QSharedPointer<SpriteImage> image;
+    static QImage *image_cpy;
     static QImage image_bak;
     static Qt::CursorShape mousePointer;
+
+    static  SelectRect  *selectRect;
 
     static int margin; 
     static int cellSize;
