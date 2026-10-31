@@ -1,3 +1,10 @@
+/*--------------------------------------------------------------*\
+ *
+ *
+ *
+ *
+\*--------------------------------------------------------------*/
+
 #include "pastemode.h"
 
 PasteMode::PasteMode() {}
@@ -140,7 +147,6 @@ bool PasteMode::mouseReleaseEvent(QMouseEvent *event)
     mousePointer = Qt::ArrowCursor;
     return true;
 }
-
 
 void PasteMode::paintEvent(QPaintEvent *event, QPainter *painter)
 {
