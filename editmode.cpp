@@ -6,7 +6,7 @@ QColor EditMode::foregroundColor = Qt::black;
 QColor EditMode::backgroundColor = QColor(0,0,0,0);
 QSharedPointer<SpriteImage> EditMode::image = QSharedPointer<SpriteImage>::create(32, 32, QImage::Format_ARGB32);
 QImage EditMode::image_bak = QImage(32, 32, QImage::Format_ARGB32);
-QImage *EditMode::image_cpy = nullptr;
+QImage EditMode::image_cpy = QImage();
 
 bool EditMode::fShiftKey = false;
 int EditMode::margin = 4; 
@@ -23,11 +23,6 @@ EditMode::EditMode()
 
 EditMode::~EditMode()
 {
-    if (image_cpy!=nullptr){
-        delete image_cpy;
-        image_cpy = nullptr;
-    }
-
     if (selectRect){
         delete selectRect;
         selectRect = nullptr;

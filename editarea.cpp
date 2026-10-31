@@ -19,6 +19,7 @@ EditArea::EditArea(QWidget *parent)
     rectangleMode = new RectangleMode();
     ellipseMode = new EllipseMode();
     selectRectMode = new SelectRectMode();
+    pasteMode = new PasteMode();
 
     setPencilMode();
 
@@ -39,6 +40,7 @@ EditArea::~EditArea()
     if (rectangleMode) delete rectangleMode;
     if (ellipseMode) delete ellipseMode;
     if (selectRectMode) delete selectRectMode;
+    if (pasteMode) delete pasteMode;
 
 }
 
@@ -218,6 +220,11 @@ void EditArea::paintEvent(QPaintEvent *event)
 
         painter.drawImage(QRect(w*EditMode::cellSize+10,128,w,h), EditMode::image_bak, EditMode::image_bak.rect());
 
+        if (!EditMode::image_cpy.isNull()){
+            int cpy_w = EditMode::image_cpy.size().width();
+            int cpy_h = EditMode::image_cpy.size().height();
+            painter.drawImage(QRect(w*EditMode::cellSize+10,280,cpy_w,cpy_h), EditMode::image_cpy, EditMode::image_cpy.rect());
+        }
     }
 
     //qDebug() << "EditArea Paint Event";
@@ -283,16 +290,35 @@ void EditArea::setNewSpriteImage(QSharedPointer<SpriteImage> newImage)
 void EditArea::doCopyRectangle()
 {
     qDebug() << "Copy Select Rectangle";
+    QRect r = EditMode::selectRect->getPixRect();
+    r.adjust(0,0,1,1);
+    EditMode::image_cpy = EditMode::image->copy(r);
+    curEditMode->init();
+
 }
 
 void EditArea::doCutRectangle()
 {
     qDebug() << "Cut Select Rectangle";
+    QRect r = EditMode::selectRect->getPixRect();
+    r.adjust(0,0,1,1);
+    EditMode::image_cpy = EditMode::image->copy(r);
+
+    QPainter painter(EditMode::image.get());
+    painter.setCompositionMode(QPainter::CompositionMode_Source);
+    r = EditMode::selectRect->getPixRect();
+    r.adjust(0,0,1,1);
+    painter.fillRect(r,EditMode::backgroundColor);
+    //painter.setCompositionMode(QPainter::CompositionMode_SourceOver);
+    curEditMode->init();
 }
 
 void EditArea::doPaste()
 {
     qDebug() << "Paste image";
+    if (!EditMode::image_cpy.isNull()){
+        setPasteMode();
+    }
 }
 
 void EditArea::setSelectRectMode()
@@ -321,6 +347,14 @@ void EditArea::setEllipseMode()
     curEditMode = ellipseMode;
     curEditMode->init();
     update();
+}
+
+void EditArea::setPasteMode()
+{
+    curEditMode = pasteMode;
+    curEditMode->init();
+    update();
+
 }
 
 

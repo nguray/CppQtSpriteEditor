@@ -13,6 +13,7 @@
 #include "rectanglemode.h"
 #include "ellipsemode.h"
 #include "selectrectmode.h"
+#include "pastemode.h"
 #include "spriteimage.h"
 
 
@@ -31,6 +32,7 @@ public:
     void setPencilMode();
     void setRectangleMode();
     void setEllipseMode();
+    void setPasteMode();
 
 
 public slots:
@@ -77,5 +79,6 @@ private:
     RectangleMode   *rectangleMode;
     EllipseMode     *ellipseMode;
     SelectRectMode  *selectRectMode;
+    PasteMode       *pasteMode;
 
 };
