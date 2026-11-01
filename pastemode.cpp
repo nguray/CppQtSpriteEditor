@@ -104,24 +104,15 @@ bool PasteMode::mouseMoveEvent(QMouseEvent *event)
             if (r.contains(pix)){ // Keep actions inside image limits
                 QPoint v = pix - startPt;
                 if (v.x()||v.y()){
-                    int savX = *(selCorner->x);
-                    int savY = *(selCorner->y);
-                    *(selCorner->x) = startPt.x() + v.x();
-                    *(selCorner->y) = startPt.y() + v.y();
-                    if ((selectRect->pixLeft<selectRect->pixRight) &&
-                        (selectRect->pixTop<selectRect->pixBottom)){
+                    if (selectRect->moveHandle(selCorner,startPt+v)){
                         updateImage();
                         fDoNotDrawHandles = true;
                         return true;
-                    }else{
-                        *(selCorner->x) = savX;
-                        *(selCorner->y) = savY;
-                        return false;
                     }
+                    return false;
                 }
             }
         }
-
 
     }else{
 

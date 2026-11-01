@@ -280,11 +280,15 @@ void EditArea::updateSaveMenuItem()
 
 void EditArea::setNewSpriteImage(QSharedPointer<SpriteImage> newImage)
 {
-    curEditMode->init();
+    if (curEditMode==pasteMode){
+        setSelectRectMode();
+    }else
+        curEditMode->init();
     EditMode::setImage(newImage);
     EditMode::backupImage();
     updateSaveMenuItem();
     update();
+
 }
 
 void EditArea::doCopyRectangle()

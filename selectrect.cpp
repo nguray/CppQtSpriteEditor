@@ -11,11 +11,23 @@ SelectRect::SelectRect()
     // BottomLeft
     corners[3] = new CornerRect(&pixLeft,&pixBottom,-1,1,Qt::SizeBDiagCursor);
 
+
+    // MiddleTop
+    corners[4] = new CornerRect(nullptr,&pixTop,0,0,Qt::SizeVerCursor);
+    // MiddleRight
+    corners[5] = new CornerRect(&pixRight,nullptr,0,0,Qt::SizeHorCursor);
+    // MiddleBottom
+    corners[6] = new CornerRect(nullptr,&pixBottom,0,0,Qt::SizeVerCursor);
+    // MiddleBottom
+    corners[7] = new CornerRect(&pixLeft,nullptr,0,0,Qt::SizeHorCursor);
+
+    //Qt::SizeVerCursor
+    //Qt::SizeHorCursor
 }
 
 SelectRect::~SelectRect()
 {
-    for (auto i=0;i<4;i++){
+    for (auto i=0;i<8;i++){
         if (auto c = corners[i]){
             delete c;
             corners[i] = nullptr;
@@ -40,7 +52,7 @@ void SelectRect::setPixNULL()
 void SelectRect::resetHandles()
 {
     // Avoid unwilling handles selection
-    for (auto i=0;i<4;i++){
+    for (auto i=0;i<8;i++){
         if (auto c = corners[i]){
             c->setRect(0,0,0,0);
         }
@@ -73,7 +85,7 @@ void SelectRect::BackupPixLimits()
 CornerRect *SelectRect::hitCorner(QPoint pt)
 {
     CornerRect *c;
-    for (auto i=0;i<4;i++){
+    for (auto i=0;i<8;i++){
         if ((c=corners[i]) && (c->contains(pt))){
             return c;
         }
@@ -82,8 +94,39 @@ CornerRect *SelectRect::hitCorner(QPoint pt)
     return NULL;
 }
 
+bool SelectRect::moveHandle(CornerRect *ptC, QPoint v)
+{
+    int savX=0,savY=0;
+    if (ptC->x){
+        savX = *(ptC->x);
+        *(ptC->x) = v.x();
+    }
+    if (ptC->y){
+        savY = *(ptC->y);
+        *(ptC->y) = v.y();
+    }
+    if ((pixLeft<pixRight) &&(pixTop<pixBottom)){
+        return true;
+    }else{
+        if (ptC->x){
+            *(ptC->x) = savX;
+        }
+        if (ptC->y){
+            *(ptC->y) = savY;
+        }
+        return false;
+    }
+
+}
+
 void SelectRect::draw(QPainter *painter,int margin,int cellSize, bool fDrawHandles)
 {
+    // 1. Activer le mode XOR pour inverser la couleur de destination
+    //auto savComMod = painter->compositionMode();
+    //painter->setCompositionMode(QPainter::RasterOp_SourceXorDestination);
+
+    if ((pixLeft==pixRight) && (pixTop==pixBottom)) return;
+
     //-- Rect frame
     int xLeft = pixLeft*cellSize + margin;
     int yTop  = pixTop*cellSize + margin;
@@ -92,19 +135,25 @@ void SelectRect::draw(QPainter *painter,int margin,int cellSize, bool fDrawHandl
 
     setRect(xLeft,yTop,xRight-xLeft,yBottom-yTop);
     painter->setBrush(Qt::NoBrush);
-    painter->setPen(QPen(QColor(0,0,64,64), 1.0, Qt::SolidLine, Qt::RoundCap,
+    painter->setPen(QPen(QColor(0,0,64,64), 1.5, Qt::DashLine, Qt::RoundCap,
                          Qt::RoundJoin));
     painter->drawRect(*this);
 
     //-- Set corner's handles fill color
-    painter->setBrush(QBrush(QColor(0,0,128,255)));
+    painter->setBrush(QBrush(QColor(0,0,0,255)));
 
     if (fDrawHandles){
+
+
         // Create and draw corners handles
         CornerRect *pC;
-        auto drawCorner = [painter](CornerRect *pC,int x,int y)
+        auto drawCorner = [painter,cellSize](CornerRect *pC,int x,int y)
         {
-            pC->setCoords(x-5,y-5,x+5,y+5);
+            int s = cellSize/2;
+            if (s < 3){
+                s = 3;
+            }
+            pC->setCoords(x-s,y-s,x+s,y+s);
             pC->translate(pC->offsetX,pC->offsetY);
             painter->drawRect(*pC);
         };
@@ -128,6 +177,29 @@ void SelectRect::draw(QPainter *painter,int margin,int cellSize, bool fDrawHandl
         if (pC = corners[3]){
             drawCorner(pC,xLeft,yBottom);
         }
+
+        //-- MiddleTop
+        if (pC = corners[4]){
+            drawCorner(pC,(xLeft+xRight)/2,yTop);
+        }
+
+        //-- MiddleRight
+        if (pC = corners[5]){
+            drawCorner(pC,xRight,(yTop+yBottom)/2);
+        }
+
+        //-- MiddleBottom
+        if (pC = corners[6]){
+            drawCorner(pC,(xLeft+xRight)/2,yBottom);
+        }
+
+        //-- MiddleLeft
+        if (pC = corners[7]){
+            drawCorner(pC,xLeft,(yTop+yBottom)/2);
+        }
+
+
     }
+    //painter->setCompositionMode(savComMod);
 
 }

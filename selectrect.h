@@ -13,8 +13,9 @@ public:
 
     bool fDefined = false;
 
-    CornerRect *corners[4];
+    CornerRect *corners[8];
     CornerRect *hitCorner(QPoint pt);
+    bool moveHandle(CornerRect *ptC,QPoint v);
 
     bool isPixNULL();
     void setPixNULL();
