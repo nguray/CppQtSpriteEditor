@@ -15,6 +15,7 @@ private:
 public:
     ColorRect();
     ColorRect(int x,int y,int s,QColor c);
+    ColorRect(QPoint pos,int s,QColor c);
     ~ColorRect();
 
     void    setColor(QColor c);

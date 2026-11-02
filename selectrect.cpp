@@ -11,7 +11,6 @@ SelectRect::SelectRect()
     // BottomLeft
     corners[3] = new CornerRect(&pixLeft,&pixBottom,-1,1,Qt::SizeBDiagCursor);
 
-
     // MiddleTop
     corners[4] = new CornerRect(nullptr,&pixTop,0,0,Qt::SizeVerCursor);
     // MiddleRight
@@ -21,16 +20,14 @@ SelectRect::SelectRect()
     // MiddleBottom
     corners[7] = new CornerRect(&pixLeft,nullptr,0,0,Qt::SizeHorCursor);
 
-    //Qt::SizeVerCursor
-    //Qt::SizeHorCursor
+
 }
 
 SelectRect::~SelectRect()
 {
-    for (auto i=0;i<8;i++){
-        if (auto c = corners[i]){
+    for (auto c : corners){
+        if (c){
             delete c;
-            corners[i] = nullptr;
         }
     }
 }
@@ -52,8 +49,8 @@ void SelectRect::setPixNULL()
 void SelectRect::resetHandles()
 {
     // Avoid unwilling handles selection
-    for (auto i=0;i<8;i++){
-        if (auto c = corners[i]){
+    for (auto c : corners){
+        if (c){
             c->setRect(0,0,0,0);
         }
     }
@@ -84,9 +81,8 @@ void SelectRect::BackupPixLimits()
 
 CornerRect *SelectRect::hitCorner(QPoint pt)
 {
-    CornerRect *c;
-    for (auto i=0;i<8;i++){
-        if ((c=corners[i]) && (c->contains(pt))){
+    for (auto c : corners){
+        if ((c!=nullptr) && (c->contains(pt))){
             return c;
         }
     }
@@ -106,8 +102,10 @@ bool SelectRect::moveHandle(CornerRect *ptC, QPoint v)
         *(ptC->y) = v.y();
     }
     if ((pixLeft<pixRight) &&(pixTop<pixBottom)){
+        // Validate move
         return true;
     }else{
+        // Restore start position
         if (ptC->x){
             *(ptC->x) = savX;
         }

@@ -3,7 +3,7 @@
 #include <fstream>
 #include <sstream>
 #include "qcolorpicker.h"
-
+#include <QApplication>
 
 Palette::Palette(QWidget *parent)
     : QWidget(parent)
@@ -11,7 +11,6 @@ Palette::Palette(QWidget *parent)
     setAttribute(Qt::WA_StaticContents);
     setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Fixed);
     setMinimumHeight(34);   
-
 
     //-- Fill colors table
     for (int i = 0; i < nbRows; i++) {
@@ -24,6 +23,13 @@ Palette::Palette(QWidget *parent)
 
     setDefaultPalette();
 
+    // Set up the single-shot timer
+    clickTimer = new QTimer(this);
+    clickTimer->setSingleShot(true);
+
+    // Connect the timer timeout to your single click action
+    connect(clickTimer, &QTimer::timeout, this, &Palette::handleSingleLeftClick);
+
 
 }
 
@@ -33,6 +39,10 @@ Palette::~Palette()
         delete r;
     }
     tblColors.clear();
+
+    if (clickTimer){
+        delete clickTimer;
+    }
 
 }
 
@@ -49,21 +59,22 @@ ColorRect *Palette::hitColors(QPoint p)
 
 void Palette::mousePressEvent(QMouseEvent *event)
 {
+
     QPoint p = event->position().toPoint();
+
+    fHitColor = false;
     if (event->button() == Qt::LeftButton){
+        startPt = p;
+        clickTimer->start(QApplication::doubleClickInterval());
+
         if (auto cr = hitColors(p) ){
-            // Select foreground color
-            foreGroundColor.setColor(cr->getColor());
-            emit foreGroundColorChanged(cr->getColor());
-            update();
-        }else if (p.x()<2*cellSize){
-            //-- Swap foreground <-> background
-            auto c = backGroundColor.getColor();
-            backGroundColor.setColor(foreGroundColor.getColor());
-            foreGroundColor.setColor(c);
-            emit foreGroundColorChanged(c);
-            update();
+            fHitColor = true;
+            hitColor = cr->getColor();
+        }else if (foreGroundColor.contains(p)){
+            fHitColor = true;
+            hitColor = foreGroundColor.getColor();
         }
+
     }else if (event->button() == Qt::RightButton){
         if (auto cr = hitColors(p) ){
             backGroundColor.setColor(cr->getColor());
@@ -74,50 +85,113 @@ void Palette::mousePressEvent(QMouseEvent *event)
 
 }
 
-void Palette::mouseDoubleClickEvent(QMouseEvent *event) {
+void Palette::handleSingleLeftClick() {
+    qDebug() << "Single Left click Detected!";
+    if (auto cr = hitColors(startPt) ){
+        // Select foreground color
+        foreGroundColor.setColor(cr->getColor());
+        emit foreGroundColorChanged(cr->getColor());
+        update();
+    }else if (startPt.x()<2*cellSize){
+        //-- Swap foreground <-> background
+        auto c = backGroundColor.getColor();
+        backGroundColor.setColor(foreGroundColor.getColor());
+        foreGroundColor.setColor(c);
+        emit foreGroundColorChanged(c);
+        update();
+    }
+}
+
+
+void Palette::mouseDoubleClickEvent(QMouseEvent *event)
+{
+
+    // Disable single clich handler
+    clickTimer->stop();
+
     if (event->button() == Qt::LeftButton) {
+
         QPoint p = event->position().toPoint();
 
         // Handle left double-click
         qDebug() << "Left mouse double-clicked at:" << event->pos();
 
         if (auto cr = hitColors(p) ){
+            if (cr!=tblColors.front()){
+                QColorPicker picker(this);
+                picker.setColor(cr->getColor());
 
+                if (picker.exec() == QDialog::Accepted) {
+                    QColor color = picker.color();
+                    cr->setColor(color);
+                    qDebug() << "Linux user picked color:" << color.name();
+                    update();
+                }
+            }
+        }else if (foreGroundColor.contains(p)){
             QColorPicker picker(this);
-            picker.setColor(cr->getColor());
+            picker.setColor(foreGroundColor.getColor());
 
             if (picker.exec() == QDialog::Accepted) {
                 QColor color = picker.color();
-                cr->setColor(color);
+                foreGroundColor.setColor(color);
                 qDebug() << "Linux user picked color:" << color.name();
-            }
+                emit foreGroundColorChanged(foreGroundColor.getColor());
+                update();
 
+            }
         }
     }
 
-    // Always call the base class implementation if you want standard behavior
-    QWidget::mouseDoubleClickEvent(event);
 }
 
 
 void Palette::mouseMoveEvent(QMouseEvent *event)
 {
     if ((event->buttons() & Qt::LeftButton)){
-    //
+        QPoint p = event->position().toPoint();
+        if (fHitColor){
+            QPoint v = p - startPt;
+            if (v!=QPoint(0,0)){
+                if (!dragColor){
+                    dragColor = new ColorRect(startPt.x()-cellSize/2,startPt.y()-cellSize,cellSize,hitColor);
+                }
+                dragColor->moveCenter(startPt+v);
+                update();
+            }
+        }
     }
 }
 
 void Palette::mouseReleaseEvent(QMouseEvent *event)
 {
-    // if (event->button() == Qt::LeftButton && scribbling) {
-    //     drawLineTo(event->position().toPoint());
-    //     scribbling = false;
-    // }
+    qDebug() << "Mouse Release button";
+    qDebug() << "--------------";
+    QPoint p = event->position().toPoint();
+    if (event->button() == Qt::LeftButton){
+        if (dragColor) {
+            if (auto cr = hitColors(p) ){
+                if (cr!= tblColors.front()){
+                    cr->setColor(dragColor->getColor());
+                }
+            }
+            delete dragColor;
+            dragColor = nullptr;
+            update();
+        }
+    }
+
 }
 
 void Palette::resizeEvent(QResizeEvent *event)
 {
     QWidget::resizeEvent(event);
+}
+
+void Palette::onSetForeGroundColor(QColor c)
+{
+    foreGroundColor.setColor(c);
+    update();
 }
 
 void Palette::paintEvent(QPaintEvent *event)
@@ -133,6 +207,16 @@ void Palette::paintEvent(QPaintEvent *event)
     backGroundColor.draw(&painter);
     foreGroundColor.draw(&painter);
     drawColors(&painter);
+
+    //--
+    if (dragColor){
+        dragColor->draw(&painter);
+        // painter.setBrush(Qt::NoBrush);
+        // painter.setPen(QPen(Qt::red, 0, Qt::DashLine, Qt::RoundCap,
+        //                      Qt::RoundJoin));
+        // painter.drawRect(*dragColor);
+
+    }
 
 }
 

@@ -7,6 +7,8 @@
 #include <QImage>
 #include <QPainter>
 #include <QTimer>
+#include <QPixmap>
+#include <QCursor>
 
 #include "editmode.h"
 #include "pencilmode.h"
@@ -48,6 +50,9 @@ public slots:
 signals:
     void imageChanged();
     void enableSave(bool fEnableSave);
+    void pickImageColor(QColor c);
+    // Declare the signal here. You don't implement this in the .cpp file.
+    void showStatusMessage(const QString &message, int timeout = 0);
 
 protected:
     void mousePressEvent(QMouseEvent *event) override;
@@ -67,6 +72,8 @@ private:
     void updateSaveMenuItem();
 
     QTimer *m_timer;
+    QPixmap pipettePixmap;
+    QCursor pipetteCursor;
 
     bool modified = false;
     int myPenWidth = 1;

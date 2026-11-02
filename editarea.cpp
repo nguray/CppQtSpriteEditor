@@ -1,5 +1,6 @@
 
 #include "editarea.h"
+#include <QMainWindow>
 
 EditArea::EditArea(QWidget *parent)
     : QWidget(parent)
@@ -26,11 +27,9 @@ EditArea::EditArea(QWidget *parent)
     m_timer = new QTimer(this);
     connect(m_timer, &QTimer::timeout, this, &EditArea::toggleFlash);
 
-    // QPainter painter(&EditMode::image);
-    // painter.setPen(QPen(EditMode::foregroundColor, myPenWidth, Qt::SolidLine, Qt::RoundCap,
-    //                     Qt::RoundJoin));
-    // painter.drawLine(QPoint(0,0), QPoint(31,31));
 
+    pipettePixmap = QPixmap("://icons/pipette.png");
+    pipetteCursor = QCursor(pipettePixmap, 4, 26);
 
 }
 
@@ -85,14 +84,25 @@ void EditArea::mousePressEvent(QMouseEvent *event)
 {
     setFocus(Qt::MouseFocusReason);
     event->accept();
-    if (curEditMode->mousePressEvent(event)){
-        update();
-        emit(imageChanged());
-        updateSaveMenuItem();
-    }
-    // Change EditArea widget cursor if required
-    if (cursor().shape()!=curEditMode->mousePointer){
-        setCursor(curEditMode->mousePointer);
+
+    if (EditMode::fControlKey){
+        auto pt = event->position().toPoint();
+        auto [fOk, c] = EditMode::getPixelColor(pt);
+        if (fOk){
+            EditMode::foregroundColor = c;
+            emit(pickImageColor(c));
+        }
+        setCursor(pipetteCursor);
+    }else{
+        if (curEditMode->mousePressEvent(event)){
+            update();
+            emit(imageChanged());
+            updateSaveMenuItem();
+        }
+        // Change EditArea widget cursor if required
+        if (cursor().shape()!=curEditMode->mousePointer){
+            setCursor(curEditMode->mousePointer);
+        }
     }
 
 }
@@ -111,30 +121,41 @@ void EditArea::mouseMoveEvent(QMouseEvent *event)
 {
     setFocus(Qt::MouseFocusReason);
     event->accept();
-    if (curEditMode->mouseMoveEvent(event)){
-        update();
-        emit(imageChanged());
-        updateSaveMenuItem();
+
+    if (EditMode::fControlKey){
+        setCursor(pipetteCursor);
+    }else{
+        if (curEditMode->mouseMoveEvent(event)){
+            update();
+            emit(imageChanged());
+            updateSaveMenuItem();
+        }
+
+        // Change EditArea widget cursor if required
+        if (cursor().shape()!=curEditMode->mousePointer){
+            setCursor(curEditMode->mousePointer);
+        }
+
     }
 
-    // Change EditArea widget cursor if required
-    if (cursor().shape()!=curEditMode->mousePointer){
-        setCursor(curEditMode->mousePointer);
-    }
 
 }
 
 void EditArea::mouseReleaseEvent(QMouseEvent *event)
 {
     event->accept();
-    if (curEditMode->mouseReleaseEvent(event)){
-        update();
-    }
-    // Change EditArea widget cursor if required
-    if (cursor().shape()!=curEditMode->mousePointer){
-        setCursor(curEditMode->mousePointer);
-    }
 
+    if (EditMode::fControlKey){
+        setCursor(pipetteCursor);
+    }else{
+        if (curEditMode->mouseReleaseEvent(event)){
+            update();
+        }
+        // Change EditArea widget cursor if required
+        if (cursor().shape()!=curEditMode->mousePointer){
+            setCursor(curEditMode->mousePointer);
+        }
+    }
 }
 
 void EditArea::keyPressEvent(QKeyEvent *event)
@@ -145,6 +166,11 @@ void EditArea::keyPressEvent(QKeyEvent *event)
         EditMode::fShiftKey = true;
         m_timer->start(400); // Toggle every 400 milliseconds
         update();
+    }else if (event->key()==Qt::Key_Control){
+        EditMode::fControlKey = true;
+        setCursor(pipetteCursor);
+        emit showStatusMessage("Pipette Mode", 3000); // 3 seconds
+
     }
     QWidget::keyPressEvent(event);
 
@@ -157,6 +183,9 @@ void EditArea::keyReleaseEvent(QKeyEvent *event)
         EditMode::fShiftKey = false;
          m_timer->stop();
         update();
+    }else if (event->key()==Qt::Key_Control){
+        EditMode::fControlKey = false;
+        setCursor(Qt::ArrowCursor);
     }
     QWidget::keyReleaseEvent(event);
 

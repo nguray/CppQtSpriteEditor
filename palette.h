@@ -5,6 +5,7 @@
 #include <QPaintEvent>
 #include <QResizeEvent>
 #include <QPainter>
+#include <QTimer>
 #include <vector>
 #include "colorrect.h"
 
@@ -40,7 +41,13 @@ protected:
     void mouseMoveEvent(QMouseEvent *event) override;
     void mouseReleaseEvent(QMouseEvent *event) override;
     void paintEvent(QPaintEvent *event) override;
-    void resizeEvent(QResizeEvent *event) override;    
+    void resizeEvent(QResizeEvent *event) override;
+
+public slots:
+    void onSetForeGroundColor(QColor c);
+
+private slots:
+    void handleSingleLeftClick();
 
 private:
 
@@ -55,14 +62,20 @@ private:
     void          setDefaultPalette();
 
     QColor myGridColor = Qt::black;
+    bool   fHitColor;
+    QColor hitColor;
 
     int nbColumns = 16;
     int nbRows = 2;
     int cellSize = 16;
+    QPoint startPt;
 
     ColorRect   foreGroundColor;
     ColorRect   backGroundColor;
 
+    ColorRect   *dragColor = nullptr;
+
     std::vector<ColorRect *> tblColors;
 
+    QTimer  *clickTimer=nullptr;
 };

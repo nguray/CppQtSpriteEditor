@@ -1,6 +1,8 @@
 #ifndef SELECTRECT_H
 #define SELECTRECT_H
 
+#include <array>
+
 #include <QRect>
 #include <QPainter>
 #include "cornerrect.h"
@@ -13,7 +15,7 @@ public:
 
     bool fDefined = false;
 
-    CornerRect *corners[8];
+    std::array<CornerRect *, 8> corners{};
     CornerRect *hitCorner(QPoint pt);
     bool moveHandle(CornerRect *ptC,QPoint v);
 

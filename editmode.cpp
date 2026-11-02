@@ -9,7 +9,8 @@ QImage EditMode::image_bak = QImage(32, 32, QImage::Format_ARGB32);
 QImage EditMode::image_cpy = QImage();
 
 bool EditMode::fShiftKey = false;
-int EditMode::margin = 4; 
+bool EditMode::fControlKey = false;
+int EditMode::margin = 4;
 int EditMode::cellSize = 10;
 Qt::CursorShape EditMode::mousePointer = Qt::ArrowCursor;
 
@@ -55,6 +56,16 @@ void EditMode::setImage(QSharedPointer<SpriteImage> new_image)
     image = new_image;
     image_bak = QImage(image->size(),image->format());
     image_bak.fill(QColor(128, 0, 0, 255));
+}
+
+std::tuple<bool,QColor> EditMode::getPixelColor(QPoint pt)
+{
+    auto pix = Pos2Pixel(pt);
+    QRect rect = image->rect();
+    if (rect.contains(pix)){
+        return {true, image->pixelColor(pix)};
+    }
+    return {false, QColor(0,0,0,0)};
 }
 
 void EditMode::backupImage()

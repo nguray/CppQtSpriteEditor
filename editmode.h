@@ -27,8 +27,9 @@ public:
     static int cellSize;
 
     static bool fShiftKey;
+    static bool fControlKey;
 
-    QPoint Pos2Pixel(QPoint p);
+    static QPoint Pos2Pixel(QPoint p);
 
     QRect  Pixel2Rect(int px,int py);
     QRect  Pixel2Rect(QPoint p);
@@ -37,6 +38,7 @@ public:
     static void   restoreImage();
 
     static void setImage(QSharedPointer<SpriteImage> image);
+    static std::tuple<bool,QColor> getPixelColor(QPoint p);
 
     virtual void init()=0;
     virtual void updateImage()=0;

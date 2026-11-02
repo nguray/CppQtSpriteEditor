@@ -73,13 +73,21 @@ MainWindow::MainWindow(QWidget *parent)
 
 
     connect(palette, &Palette::foreGroundColorChanged, editarea,
-          &EditArea::setForegroundColor);
+            &EditArea::setForegroundColor);
+    connect(editarea,&EditArea::pickImageColor, palette,
+            &Palette::onSetForeGroundColor);
+
 
     palette->load(".","myPalette.txt");
 
     connect(editarea,&EditArea::enableSave,this,&MainWindow::handle_enable_save);
     connect(sprites,&Sprites::enableSave,this,&MainWindow::handle_enable_save);
     connect(sprites,&Sprites::fileNameChanged,this,&MainWindow::display_filename);
+
+
+    connect(editarea, &EditArea::showStatusMessage,
+            ui->statusbar, &QStatusBar::showMessage);
+
 
     on_actionPencilTrigger();
 

@@ -7,6 +7,10 @@ ColorRect::ColorRect(int x,int y,int s,QColor c):
     QRect(x,y,s,s),color(c)
 {}
 
+ColorRect::ColorRect(QPoint pos,int s,QColor c):
+    QRect(pos.x(),pos.y(),s,s),color(c)
+{}
+
 ColorRect::~ColorRect()
 {}
 
