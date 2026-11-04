@@ -12,7 +12,7 @@ bool EditMode::fShiftKey = false;
 bool EditMode::fControlKey = false;
 int EditMode::cellSize = 10;
 
-float EditMode::zoom = 1.0f;
+float EditMode::zoomFactor = 1.0f;
 QPointF EditMode::zoomCenter = QPointF();
 QPointF EditMode::origin = QPointF(0.0f,0.0f);
 

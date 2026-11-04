@@ -88,6 +88,7 @@ void EditArea::mousePressEvent(QMouseEvent *event)
     event->accept();
 
     if (event->button() == Qt::MiddleButton){
+        // Store Starting position for computing canvas translation when mouse is moved
         lastMousePos = event->position();
 
     }else if (EditMode::fControlKey){
@@ -128,9 +129,13 @@ void EditArea::mouseMoveEvent(QMouseEvent *event)
     event->accept();
 
     if ((event->buttons() & Qt::MiddleButton)){
-        EditMode::origin += event->position() - lastMousePos;
-        lastMousePos = event->position();
-        update();
+        // Check whether the mouse cursor is within the widget
+        if (rect().contains(event->position().toPoint())){
+            // Compute canvas translation
+            EditMode::origin += event->position() - lastMousePos;
+            lastMousePos = event->position();
+            update();
+        }
     }else if (EditMode::fControlKey){
         setCursor(pipetteCursor);
     }else{
@@ -144,9 +149,7 @@ void EditArea::mouseMoveEvent(QMouseEvent *event)
         if (cursor().shape()!=curEditMode->mousePointer){
             setCursor(curEditMode->mousePointer);
         }
-
     }
-
 
 }
 
@@ -156,9 +159,6 @@ void EditArea::mouseReleaseEvent(QMouseEvent *event)
 
     if (event->button() == Qt::MiddleButton){
         //
-        fUpdatezoomCenter = true;
-        //EditMode::zoomCenter = EditMode::canvasInverseTransform.map(event->position());
-        //update();
     }else if (EditMode::fControlKey){
         setCursor(pipetteCursor);
     }else{
@@ -179,15 +179,15 @@ void EditArea::wheelEvent(QWheelEvent *event)
     if (!numDegrees.isNull()) {
         QPoint numSteps = numDegrees / 15;
         if (numSteps.y()>0){
-            float nv = EditMode::zoom + 0.04f;
+            float nv = EditMode::zoomFactor + 0.04f;
             if (nv<10.0f){
-                EditMode::zoom = nv;
+                EditMode::zoomFactor = nv;
                 update();
             }
         }else{
-            float nv = EditMode::zoom - 0.04f;
+            float nv = EditMode::zoomFactor - 0.04f;
             if (nv>0.1f){
-                EditMode::zoom = nv;
+                EditMode::zoomFactor = nv;
                 update();
             }
         }
@@ -237,31 +237,33 @@ void EditArea::keyReleaseEvent(QKeyEvent *event)
 
 void EditArea::resizeEvent(QResizeEvent *event)
 {
-    // if (width() > image.width() || height() > image.height()) {
-    //     int newWidth = qMax(width() + 128, image.width());
-    //     int newHeight = qMax(height() + 128, image.height());
-    //     resizeImage(&image, QSize(newWidth, newHeight));
-    //     update();
-    //     qDebug() << "Resize Event";
-    // }
-    QSize s = event->size();
-    int minDim = s.height();
-    if (minDim>s.width()){
-        minDim = s.width();
+    initZoomPan(event->size(), EditMode::image->size());
+
+    QWidget::resizeEvent(event);
+}
+
+void EditArea::initZoomPan(QSize canvasSize, QSize imageSize)
+{
+
+    int minDim = canvasSize.height();
+    if (minDim>canvasSize.width()){
+        minDim = canvasSize.width();
     }
-    EditMode::cellSize = (minDim-4) / EditMode::image->size().width();
+    EditMode::cellSize = (minDim-4) / imageSize.width();
 
+    EditMode::zoomFactor = 1.0f;
 
-    auto w = EditMode::cellSize*EditMode::image->size().width();
-    auto h = EditMode::cellSize*EditMode::image->size().height();
-    EditMode::origin.setX(s.width()/2.0f - w/2.0f);
-    EditMode::origin.setY(s.height()/2.0f - h/2.0f);
+    auto w = EditMode::cellSize*imageSize.width();
+    auto h = EditMode::cellSize*imageSize.height();
+    EditMode::origin.setX(canvasSize.width()/2.0f - w/2.0f);
+    EditMode::origin.setY(canvasSize.height()/2.0f - h/2.0f);
 
     EditMode::zoomCenter.setX(w/2.0f);
     EditMode::zoomCenter.setY(h/2.0f);
 
-    QWidget::resizeEvent(event);
 }
+
+
 
 void EditArea::drawGrid(QPainter *painter)
 {
@@ -276,10 +278,6 @@ void EditArea::drawGrid(QPainter *painter)
             y = yTop + i * EditMode::cellSize;
 
             painter->drawPoint(QPoint(x,y));
-            //painter->drawRect(QRect(x+1,y+1,3,3));
-            //painter->drawPoint(QPoint(x,y));
-            //painter->drawLine(QPoint(x-2,y), QPoint(x+2,y));
-            //painter->drawLine(QPoint(x,y-2), QPoint(x,y+2));
         }
     }
 
@@ -293,6 +291,13 @@ void EditArea::paintEvent(QPaintEvent *event)
     QRect r = event->rect();
     painter.fillRect(r,QColor(220,220,204));
 
+    //-- Canvas Zoom Pan settings of the edit image
+
+    EditMode::image->canvasSize = size(); // Store canvas size to trigger init Zoom Pan
+    EditMode::image->cellSize   = EditMode::cellSize;
+    EditMode::image->zoomFactor = EditMode::zoomFactor;
+    EditMode::image->origin     = EditMode::origin;
+    EditMode::image->zoomCenter = EditMode::zoomCenter;
 
     painter.save();
     EditMode::canvasTransform.reset();
@@ -300,7 +305,7 @@ void EditArea::paintEvent(QPaintEvent *event)
 
 
     EditMode::canvasTransform.translate(EditMode::zoomCenter.x(), EditMode::zoomCenter.y());
-    EditMode::canvasTransform.scale(EditMode::zoom, EditMode::zoom);
+    EditMode::canvasTransform.scale(EditMode::zoomFactor, EditMode::zoomFactor);
     EditMode::canvasTransform.translate(-EditMode::zoomCenter.x(), -EditMode::zoomCenter.y());
 
     painter.setTransform(EditMode::canvasTransform);
@@ -416,6 +421,21 @@ void EditArea::setNewSpriteImage(QSharedPointer<SpriteImage> newImage)
         curEditMode->init();
     EditMode::setImage(newImage);
     EditMode::backupImage();
+    if (newImage->canvasSize!=size()){
+        initZoomPan(size(), newImage->size());
+        newImage->cellSize   = EditMode::cellSize;
+        newImage->zoomFactor = EditMode::zoomFactor;
+        newImage->origin     = EditMode::origin;
+        newImage->zoomCenter = EditMode::zoomCenter;
+
+    }else{
+
+        EditMode::cellSize = newImage->cellSize;
+        EditMode::zoomFactor = newImage->zoomFactor;
+        EditMode::origin = newImage->origin;
+        EditMode::zoomCenter = newImage->zoomCenter;
+
+    }
     updateSaveMenuItem();
     update();
 

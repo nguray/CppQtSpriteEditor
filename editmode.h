@@ -26,13 +26,13 @@ public:
     static  SelectRect  *selectRect;
 
     static int cellSize;
-    static float zoom;
+    static float zoomFactor;
     static QPointF zoomCenter;
+    static QPointF origin;
 
     static bool fShiftKey;
     static bool fControlKey;
 
-    static QPointF origin;
     static QTransform canvasTransform;
     static QTransform canvasInverseTransform;
 

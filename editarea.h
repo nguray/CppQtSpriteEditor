@@ -73,14 +73,14 @@ private:
     void drawGrid(QPainter *painter);
     void drawPixels(QPainter *painter);
     void updateSaveMenuItem();
+    void initZoomPan(QSize canvasSize, QSize imageSize);
 
-    QTimer *m_timer;
+    QTimer  *m_timer;
     QPixmap pipettePixmap;
     QCursor pipetteCursor;
 
     QPointF lastMousePos;
 
-    bool    fUpdatezoomCenter = false;
     bool    modified = false;
     int     myPenWidth = 1;
 
