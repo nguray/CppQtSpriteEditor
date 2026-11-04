@@ -6,5 +6,6 @@
         <file>icons/layer-shape.png</file>
         <file>icons/rectangle_select.png</file>
         <file>icons/pipette.png</file>
+        <file>icons/FloodFillIcon.png</file>
     </qresource>
 </RCC>

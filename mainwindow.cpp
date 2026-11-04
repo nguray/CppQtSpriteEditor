@@ -46,12 +46,16 @@ MainWindow::MainWindow(QWidget *parent)
             this,SLOT(on_actionRectangleTrigger()));
     connect(ui->actionEllipse, SIGNAL(triggered()),
             this,SLOT(on_actionEllipseTrigger()));
+    connect(ui->actionFill, SIGNAL(triggered()),
+            this,SLOT(on_actionFillTrigger()));
+
 
     nbToolbarActions = 0;
     toolbarActions[nbToolbarActions++] = ui->actionSelection_rect;
     toolbarActions[nbToolbarActions++] = ui->actionPencil;
     toolbarActions[nbToolbarActions++] = ui->actionRectangle;
     toolbarActions[nbToolbarActions++] = ui->actionEllipse;
+    toolbarActions[nbToolbarActions++] = ui->actionFill;
 
     ui->centralwidget->setLayout(ui->verticalLayout0);
 
@@ -189,7 +193,7 @@ void MainWindow::on_actionSelectRectTrigger()
     update_toolbar(ui->actionSelection_rect);
 
     editarea->setSelectRectMode();
-    statusBar()->showMessage("Select rectangle mode");
+    statusBar()->showMessage("Select rectangle mode", 3000);
 
 }
 
@@ -198,7 +202,7 @@ void MainWindow::on_actionPencilTrigger()
     update_toolbar(ui->actionPencil);
 
     editarea->setPencilMode();
-    statusBar()->showMessage("Pencil mode");
+    statusBar()->showMessage("Pencil mode", 3000);
 
 }
 
@@ -207,7 +211,7 @@ void MainWindow::on_actionRectangleTrigger()
     update_toolbar(ui->actionRectangle);
 
     editarea->setRectangleMode();
-    statusBar()->showMessage("Draw rectangle mode");
+    statusBar()->showMessage("Draw rectangle mode", 3000);
 
 }
 
@@ -216,7 +220,16 @@ void MainWindow::on_actionEllipseTrigger()
     update_toolbar(ui->actionEllipse);
 
     editarea->setEllipseMode();
-    statusBar()->showMessage("Draw ellipse mode");
+    statusBar()->showMessage("Draw ellipse mode", 3000);
+
+}
+
+void MainWindow::on_actionFillTrigger()
+{
+    update_toolbar(ui->actionFill);
+
+    editarea->setFillMode();
+    statusBar()->showMessage("Flood fill mode", 3000);
 
 }
 

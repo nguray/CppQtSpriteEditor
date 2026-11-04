@@ -1,5 +1,7 @@
 #pragma once
 #include <QPoint>
+#include <QPointF>
+#include <QTransform>
 #include <QColor>
 #include <QImage>
 #include <QPainter>
@@ -23,11 +25,16 @@ public:
 
     static  SelectRect  *selectRect;
 
-    static int margin; 
     static int cellSize;
+    static float zoom;
+    static QPointF zoomCenter;
 
     static bool fShiftKey;
     static bool fControlKey;
+
+    static QPointF origin;
+    static QTransform canvasTransform;
+    static QTransform canvasInverseTransform;
 
     static QPoint Pos2Pixel(QPoint p);
 

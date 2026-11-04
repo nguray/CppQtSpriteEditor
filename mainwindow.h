@@ -36,6 +36,7 @@ private slots:
     void on_actionPencilTrigger();
     void on_actionRectangleTrigger();
     void on_actionEllipseTrigger();
+    void on_actionFillTrigger();
     void handle_enable_save(bool fEnableSave);
     void display_filename(QString fileName);
 

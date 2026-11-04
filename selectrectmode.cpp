@@ -32,7 +32,8 @@ bool SelectRectMode::mousePressEvent(QMouseEvent *event)
 
     if (event->button() == Qt::LeftButton) {
 
-        QPoint pt = event->position().toPoint();
+        QPointF canvasPos = EditMode::canvasInverseTransform.map(event->position());
+        auto pt = canvasPos.toPoint();
         auto pix = Pos2Pixel(pt);
 
         if (selCorner=selectRect->hitCorner(pt)){
@@ -76,7 +77,9 @@ bool SelectRectMode::mousePressEvent(QMouseEvent *event)
 
 bool SelectRectMode::mouseMoveEvent(QMouseEvent *event)
 {
-    QPoint pt = event->position().toPoint();
+    QPointF canvasPos = EditMode::canvasInverseTransform.map(event->position());
+    auto pt = canvasPos.toPoint();
+
     auto pix = Pos2Pixel(pt);
 
     if ((event->buttons() & Qt::LeftButton)){
@@ -168,6 +171,6 @@ bool SelectRectMode::mouseReleaseEvent(QMouseEvent *event)
 void SelectRectMode::paintEvent(QPaintEvent *event, QPainter *painter)
 {
     if (!selectRect->isPixNULL()){
-        selectRect->draw(painter,margin,cellSize,!fDoNotDrawHandles);
+        selectRect->draw(painter,cellSize,!fDoNotDrawHandles);
     }
 }

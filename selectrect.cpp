@@ -117,7 +117,7 @@ bool SelectRect::moveHandle(CornerRect *ptC, QPoint v)
 
 }
 
-void SelectRect::draw(QPainter *painter,int margin,int cellSize, bool fDrawHandles)
+void SelectRect::draw(QPainter *painter,int cellSize, bool fDrawHandles)
 {
     // 1. Activer le mode XOR pour inverser la couleur de destination
     //auto savComMod = painter->compositionMode();
@@ -126,10 +126,10 @@ void SelectRect::draw(QPainter *painter,int margin,int cellSize, bool fDrawHandl
     if ((pixLeft==pixRight) && (pixTop==pixBottom)) return;
 
     //-- Rect frame
-    int xLeft = pixLeft*cellSize + margin;
-    int yTop  = pixTop*cellSize + margin;
-    int xRight = pixRight*cellSize + margin + cellSize;
-    int yBottom = pixBottom*cellSize + margin + cellSize;
+    int xLeft = pixLeft*cellSize;
+    int yTop  = pixTop*cellSize;
+    int xRight = pixRight*cellSize + cellSize;
+    int yBottom = pixBottom*cellSize + cellSize;
 
     setRect(xLeft,yTop,xRight-xLeft,yBottom-yTop);
     painter->setBrush(Qt::NoBrush);
@@ -147,7 +147,7 @@ void SelectRect::draw(QPainter *painter,int margin,int cellSize, bool fDrawHandl
         CornerRect *pC;
         auto drawCorner = [painter,cellSize](CornerRect *pC,int x,int y)
         {
-            int s = cellSize/2;
+            int s = cellSize/3;
             if (s < 3){
                 s = 3;
             }
@@ -156,44 +156,42 @@ void SelectRect::draw(QPainter *painter,int margin,int cellSize, bool fDrawHandl
             painter->drawRect(*pC);
         };
 
+        //-- Corner Handles
         //--TopLet
         if (pC = corners[0]){
             drawCorner(pC,xLeft,yTop);
         }
-
         //--TopRight
         if (pC = corners[1]){
             drawCorner(pC,xRight,yTop);
         }
-
         //--BottomRight
         if (pC = corners[2]){
             drawCorner(pC,xRight,yBottom);
         }
-
         //--BottomRight
         if (pC = corners[3]){
             drawCorner(pC,xLeft,yBottom);
         }
 
+        //-- Middle Handles
+        int xMiddle = (xLeft+xRight)/2;
+        int yMiddle = (yTop+yBottom)/2;
         //-- MiddleTop
         if (pC = corners[4]){
-            drawCorner(pC,(xLeft+xRight)/2,yTop);
+            drawCorner(pC,xMiddle,yTop);
         }
-
         //-- MiddleRight
         if (pC = corners[5]){
-            drawCorner(pC,xRight,(yTop+yBottom)/2);
+            drawCorner(pC,xRight,yMiddle);
         }
-
         //-- MiddleBottom
         if (pC = corners[6]){
-            drawCorner(pC,(xLeft+xRight)/2,yBottom);
+            drawCorner(pC,xMiddle,yBottom);
         }
-
         //-- MiddleLeft
         if (pC = corners[7]){
-            drawCorner(pC,xLeft,(yTop+yBottom)/2);
+            drawCorner(pC,xLeft,yMiddle);
         }
 
 

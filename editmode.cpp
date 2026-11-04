@@ -10,8 +10,16 @@ QImage EditMode::image_cpy = QImage();
 
 bool EditMode::fShiftKey = false;
 bool EditMode::fControlKey = false;
-int EditMode::margin = 4;
 int EditMode::cellSize = 10;
+
+float EditMode::zoom = 1.0f;
+QPointF EditMode::zoomCenter = QPointF();
+QPointF EditMode::origin = QPointF(0.0f,0.0f);
+
+
+QTransform EditMode::canvasTransform = QTransform();
+QTransform EditMode::canvasInverseTransform = QTransform();
+
 Qt::CursorShape EditMode::mousePointer = Qt::ArrowCursor;
 
 SelectRect  *EditMode::selectRect = nullptr;
@@ -33,8 +41,8 @@ EditMode::~EditMode()
 
 QPoint EditMode::Pos2Pixel(QPoint p)
 {
-    int x = (p.x()-margin) / cellSize;
-    int y = (p.y()-margin) / cellSize;
+    int x = (p.x()) / cellSize;
+    int y = (p.y()) / cellSize;
     return QPoint(x,y);
 }
 
@@ -45,11 +53,10 @@ QRect EditMode::Pixel2Rect(int px,int py)
 
 QRect EditMode::Pixel2Rect(QPoint p)
 {
-    int xLeft = p.x()*cellSize + margin;
-    int yTop  = p.y()*cellSize + margin;
+    int xLeft = p.x()*cellSize;
+    int yTop  = p.y()*cellSize;
     return QRect(xLeft,yTop,cellSize,cellSize);
 }
-
 
 void EditMode::setImage(QSharedPointer<SpriteImage> new_image)
 {

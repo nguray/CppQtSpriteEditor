@@ -89,7 +89,8 @@ PixelRect *PencilMode::hitVertex(QPoint pt)
 bool PencilMode::mousePressEvent(QMouseEvent *event)
 {
     
-    auto pt = event->position().toPoint();
+    QPointF canvasPos = EditMode::canvasInverseTransform.map(event->position());
+    auto pt = canvasPos.toPoint();
 
     if (event->button() == Qt::LeftButton) {
 
@@ -146,7 +147,9 @@ bool PencilMode::mousePressEvent(QMouseEvent *event)
 
 bool PencilMode::mouseMoveEvent(QMouseEvent *event)
 {
-    auto pt = event->position().toPoint();
+    QPointF canvasPos = EditMode::canvasInverseTransform.map(event->position());
+    auto pt = canvasPos.toPoint();
+
     auto pix = Pos2Pixel(pt);
     if ((event->buttons() & Qt::LeftButton)){
 
@@ -185,9 +188,11 @@ bool PencilMode::mouseMoveEvent(QMouseEvent *event)
 
 bool PencilMode::mouseReleaseEvent(QMouseEvent *event)
 {
+    QPointF canvasPos = EditMode::canvasInverseTransform.map(event->position());
+    auto pt = canvasPos.toPoint();
 
     if ((event->button() == Qt::LeftButton)){
-        auto pix = Pos2Pixel(event->position().toPoint());
+        auto pix = Pos2Pixel(pt);
         QRect r = image->rect();
         if (r.contains(pix)){ // Keep things inside image limits
             if (fShiftKey){

@@ -25,7 +25,7 @@ public:
     QRect getPixRect();
 
     void resetHandles();
-    void draw(QPainter *painter,int margin,int cellSize,bool fDrawHandles);
+    void draw(QPainter *painter,int cellSize,bool fDrawHandles);
 
     void BackupPixLimits();
 

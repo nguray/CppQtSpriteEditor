@@ -4,6 +4,7 @@
 #include <QMouseEvent>
 #include <QPaintEvent>
 #include <QResizeEvent>
+#include <QWheelEvent>
 #include <QImage>
 #include <QPainter>
 #include <QTimer>
@@ -35,6 +36,7 @@ public:
     void setRectangleMode();
     void setEllipseMode();
     void setPasteMode();
+    void setFillMode();
 
 
 public slots:
@@ -59,6 +61,7 @@ protected:
     void mouseDoubleClickEvent(QMouseEvent *event) override;
     void mouseMoveEvent(QMouseEvent *event) override;
     void mouseReleaseEvent(QMouseEvent *event) override;
+    void wheelEvent(QWheelEvent *event) override;
     void paintEvent(QPaintEvent *event) override;
     void resizeEvent(QResizeEvent *event) override;
     void keyPressEvent(QKeyEvent *event) override;    
@@ -75,13 +78,16 @@ private:
     QPixmap pipettePixmap;
     QCursor pipetteCursor;
 
-    bool modified = false;
-    int myPenWidth = 1;
+    QPointF lastMousePos;
 
-    QColor myGridColor = Qt::black;
-    QPoint lastPoint;
+    bool    fUpdatezoomCenter = false;
+    bool    modified = false;
+    int     myPenWidth = 1;
 
-    EditMode *curEditMode=NULL;
+    QColor  myGridColor = Qt::black;
+    QPoint  lastPoint;
+
+    EditMode        *curEditMode=NULL;
     PencilMode      *pencilMode;
     RectangleMode   *rectangleMode;
     EllipseMode     *ellipseMode;

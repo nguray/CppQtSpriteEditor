@@ -31,6 +31,8 @@ EditArea::EditArea(QWidget *parent)
     pipettePixmap = QPixmap("://icons/pipette.png");
     pipetteCursor = QCursor(pipettePixmap, 4, 26);
 
+    EditMode::canvasTransform.reset();
+
 }
 
 EditArea::~EditArea()
@@ -67,8 +69,8 @@ void EditArea::drawPixels(QPainter *painter)
             QColor c = EditMode::image->pixelColor(col,row);
 
             if (c.alpha()){
-                int x = EditMode::margin + col*EditMode::cellSize+1;
-                int y = EditMode::margin + row*EditMode::cellSize+1;
+                int x = col*EditMode::cellSize+1;
+                int y = row*EditMode::cellSize+1;
 
                 painter->setBrush(QBrush(c));
                 painter->setPen(QPen(c));
@@ -85,7 +87,10 @@ void EditArea::mousePressEvent(QMouseEvent *event)
     setFocus(Qt::MouseFocusReason);
     event->accept();
 
-    if (EditMode::fControlKey){
+    if (event->button() == Qt::MiddleButton){
+        lastMousePos = event->position();
+
+    }else if (EditMode::fControlKey){
         auto pt = event->position().toPoint();
         auto [fOk, c] = EditMode::getPixelColor(pt);
         if (fOk){
@@ -122,7 +127,11 @@ void EditArea::mouseMoveEvent(QMouseEvent *event)
     setFocus(Qt::MouseFocusReason);
     event->accept();
 
-    if (EditMode::fControlKey){
+    if ((event->buttons() & Qt::MiddleButton)){
+        EditMode::origin += event->position() - lastMousePos;
+        lastMousePos = event->position();
+        update();
+    }else if (EditMode::fControlKey){
         setCursor(pipetteCursor);
     }else{
         if (curEditMode->mouseMoveEvent(event)){
@@ -145,7 +154,12 @@ void EditArea::mouseReleaseEvent(QMouseEvent *event)
 {
     event->accept();
 
-    if (EditMode::fControlKey){
+    if (event->button() == Qt::MiddleButton){
+        //
+        fUpdatezoomCenter = true;
+        //EditMode::zoomCenter = EditMode::canvasInverseTransform.map(event->position());
+        //update();
+    }else if (EditMode::fControlKey){
         setCursor(pipetteCursor);
     }else{
         if (curEditMode->mouseReleaseEvent(event)){
@@ -156,6 +170,36 @@ void EditArea::mouseReleaseEvent(QMouseEvent *event)
             setCursor(curEditMode->mousePointer);
         }
     }
+}
+
+void EditArea::wheelEvent(QWheelEvent *event)
+{
+    // Vertical scroll delta (positive = up/forward, negative = down/backward)
+    QPoint numDegrees = event->angleDelta() / 8;
+    if (!numDegrees.isNull()) {
+        QPoint numSteps = numDegrees / 15;
+        if (numSteps.y()>0){
+            float nv = EditMode::zoom + 0.04f;
+            if (nv<10.0f){
+                EditMode::zoom = nv;
+                update();
+            }
+        }else{
+            float nv = EditMode::zoom - 0.04f;
+            if (nv>0.1f){
+                EditMode::zoom = nv;
+                update();
+            }
+        }
+        //qDebug() << "Canvas Scale: " << EditMode::zoom;
+    }
+
+    // Horizontal scroll delta
+    //int xDelta = event->angleDelta().x();
+
+    // Mark event as accepted
+    event->accept();
+
 }
 
 void EditArea::keyPressEvent(QKeyEvent *event)
@@ -200,14 +244,30 @@ void EditArea::resizeEvent(QResizeEvent *event)
     //     update();
     //     qDebug() << "Resize Event";
     // }
+    QSize s = event->size();
+    int minDim = s.height();
+    if (minDim>s.width()){
+        minDim = s.width();
+    }
+    EditMode::cellSize = (minDim-4) / EditMode::image->size().width();
+
+
+    auto w = EditMode::cellSize*EditMode::image->size().width();
+    auto h = EditMode::cellSize*EditMode::image->size().height();
+    EditMode::origin.setX(s.width()/2.0f - w/2.0f);
+    EditMode::origin.setY(s.height()/2.0f - h/2.0f);
+
+    EditMode::zoomCenter.setX(w/2.0f);
+    EditMode::zoomCenter.setY(h/2.0f);
+
     QWidget::resizeEvent(event);
 }
 
 void EditArea::drawGrid(QPainter *painter)
 {
     int x,y;
-    int xLeft = EditMode::margin;
-    int yTop = EditMode::margin;
+    int xLeft = 0;
+    int yTop = 0;
     painter->setPen(QPen(myGridColor, 0, Qt::SolidLine, Qt::RoundCap,
                 Qt::RoundJoin));
     for (int i=0;i<=EditMode::image->size().height();i++){
@@ -228,15 +288,54 @@ void EditArea::drawGrid(QPainter *painter)
 void EditArea::paintEvent(QPaintEvent *event)
 { 
     QPainter painter(this);
+    int x,y;
 
     QRect r = event->rect();
-    int minDim = r.height();
-    if (minDim>r.width()){
-        minDim = r.width();
-    }
-    EditMode::cellSize = (minDim-4) / EditMode::image->size().width();
+    painter.fillRect(r,QColor(220,220,204));
 
+
+    painter.save();
+    EditMode::canvasTransform.reset();
+    EditMode::canvasTransform.translate(EditMode::origin.x(),EditMode::origin.y());
+
+
+    EditMode::canvasTransform.translate(EditMode::zoomCenter.x(), EditMode::zoomCenter.y());
+    EditMode::canvasTransform.scale(EditMode::zoom, EditMode::zoom);
+    EditMode::canvasTransform.translate(-EditMode::zoomCenter.x(), -EditMode::zoomCenter.y());
+
+    painter.setTransform(EditMode::canvasTransform);
+    EditMode::canvasInverseTransform = EditMode::canvasTransform.inverted();
+
+    auto w = EditMode::cellSize*EditMode::image->size().width();
+    auto h = EditMode::cellSize*EditMode::image->size().height();
+    r.setRect(0,0,w,h);
     painter.fillRect(r,QColor(253,253,237));
+
+    // auto xc = (int) EditMode::zoomCenter.x();
+    // auto yc = (int) EditMode::zoomCenter.y();
+    // x = xc+100;
+    // y = yc+100;
+    // painter.drawLine(QPoint(x-10,y-10), QPoint(x+10,y-10));
+    // painter.drawLine(QPoint(x+10,y-10), QPoint(x+10,y+10));
+    // painter.drawLine(QPoint(x+10,y+10), QPoint(x-10,y+10));
+    // painter.drawLine(QPoint(x-10,y+10), QPoint(x-10,y-10));
+
+    // x = xc;
+    // y = yc;
+    // painter.drawLine(QPoint(x-10,y-10), QPoint(x+10,y-10));
+    // painter.drawLine(QPoint(x+10,y-10), QPoint(x+10,y+10));
+    // painter.drawLine(QPoint(x+10,y+10), QPoint(x-10,y+10));
+    // painter.drawLine(QPoint(x-10,y+10), QPoint(x-10,y-10));
+
+    // auto w = EditMode::cellSize*EditMode::image->size().width()/2;
+    // auto h = EditMode::cellSize*EditMode::image->size().height()/2;
+    // x = xc;
+    // y = yc;
+    // painter.drawLine(QPoint(x-w,y-h), QPoint(x+w,y-h));
+    // painter.drawLine(QPoint(x+w,y-h), QPoint(x+w,y+h));
+    // painter.drawLine(QPoint(x+w,y+h), QPoint(x-w,y+h));
+    // painter.drawLine(QPoint(x-w,y+h), QPoint(x-w,y-h));
+
 
     drawGrid(&painter);
 
@@ -259,6 +358,8 @@ void EditArea::paintEvent(QPaintEvent *event)
     //qDebug() << "EditArea Paint Event";
 
     curEditMode->paintEvent(event,&painter);
+
+    painter.restore();
 
 }
 
@@ -387,6 +488,11 @@ void EditArea::setPasteMode()
     curEditMode = pasteMode;
     curEditMode->init();
     update();
+
+}
+
+void EditArea::setFillMode()
+{
 
 }
 
