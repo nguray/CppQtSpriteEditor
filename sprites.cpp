@@ -5,6 +5,8 @@
 #include <QString>
 #include <QDebug>
 #include <QFileInfo>
+#include <QDir>
+#include <QSettings>
 
 Sprites::Sprites(QWidget *parent)
     : QWidget{parent}
@@ -39,7 +41,7 @@ void Sprites::mousePressEvent(QMouseEvent *event)
 
                     // Connect actions to functions
                     connect(newAct, &QAction::triggered, this, &Sprites::newImageTriggered);
-                    connect(loadAct, &QAction::triggered, this, &Sprites::loadImageTriggered);
+                    connect(loadAct, &QAction::triggered, this, &Sprites::onLoadCurrentSprite);
 
 
                     // Display the menu at the exact click location
@@ -115,22 +117,36 @@ void Sprites::loadCurrentSprite(QString fullPathName)
     update();
 }
 
-void Sprites::loadImageTriggered()
+void Sprites::onLoadCurrentSprite()
 {
     // Open the file dialog
-    QString fileName = QFileDialog::getOpenFileName(
+    // Read the last path, fallback to the Home directory if it doesn't exist yet
+
+    QSettings settings("MyCompany", "SpriteEditor");
+
+    QString lastOpenDir = settings.value("lastOpenDir", QDir::homePath()).toString();
+
+    QString filePathName = QFileDialog::getOpenFileName(
         this,                           // Parent widget
         tr("Open Document"),            // Dialog window title
-        ".",         // Starting directory
+        lastOpenDir,         // Starting directory
         tr("png (*.png);;All Files (*.*)") // File filters
         );
 
     // Check if the user selected a file or cancelled
-    if (!fileName.isEmpty()) {
-        qDebug() << "Selected file path:" << fileName;
+    if (!filePathName.isEmpty()) {
+        qDebug() << "Selected file path:" << filePathName;
+
+        QString msg = "Loading " + QFileInfo(filePathName).fileName();
+        emit showStatusMessage(msg, 3000); // 3 seconds
+
         // Proceed with reading the file...
         iSelectCell = iSelectCellPopupMenu;
-        loadCurrentSprite(fileName);
+        loadCurrentSprite(filePathName);
+
+        QString newDir = QFileInfo(filePathName).absolutePath();
+        settings.setValue("lastOpenDir", newDir);
+
 
     } else {
         qDebug() << "File selection cancelled.";
@@ -138,26 +154,26 @@ void Sprites::loadImageTriggered()
 
 }
 
-void Sprites::SaveCurrentSprite()
+void Sprites::onSaveCurrentSprite()
 {
     if (images[iSelectCell]->fModified){
         auto currentFileName = images[iSelectCell]->fileName;
         if (currentFileName.isEmpty()){
-            SaveAsCurrentSprite();
+            onSaveAsCurrentSprite();
         }else{
             auto spr = images[iSelectCell];
             if (!spr.isNull()){
+                QString msg = "Saving " + QFileInfo(currentFileName).fileName();
+                emit showStatusMessage(msg, 3000); // 3 seconds
                 spr->save(currentFileName,"PNG");
             }
             spr->fModified = false;
             emit(enableSave(false));
-            //QString filename = QFileInfo(currentFileName).fileName();
-            //emit(fileNameChanged(filename));
         }
     }
 }
 
-void Sprites::SaveAsCurrentSprite()
+void Sprites::onSaveAsCurrentSprite()
 {
     auto spr = images[iSelectCell];
     QString fileName = spr->fileName;
@@ -177,6 +193,8 @@ void Sprites::SaveAsCurrentSprite()
             qDebug() << "Selected file path:" << filePath;
         }
         if (!spr.isNull()){
+            QString msg = "Saving " + QFileInfo(filePath).fileName();
+            emit showStatusMessage(msg, 3000); // 3 seconds
             spr->save(filePath,"PNG");
             spr->fileName = filePath;
             spr->fModified = false;

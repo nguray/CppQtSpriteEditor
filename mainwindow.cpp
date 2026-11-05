@@ -4,6 +4,8 @@
 #include <QFileDialog>
 #include <QString>
 #include <QDebug>
+#include <QDir>
+#include <QSettings>
 
 #include "newspritedlg.h"
 
@@ -17,37 +19,6 @@ MainWindow::MainWindow(QWidget *parent)
 
     ui->setupUi(this);
 
-    // File Menu actions
-    connect(ui->actionNew, SIGNAL(triggered()),
-            this,SLOT(on_actionNewTrigger()));
-    connect(ui->actionOpen, SIGNAL(triggered()),
-            this,SLOT(on_actionOpenTrigger()));
-    connect(ui->actionSave, SIGNAL(triggered()),
-            this,SLOT(on_actionSaveTrigger()));
-    connect(ui->actionSave_As, SIGNAL(triggered()),
-            this,SLOT(on_actionSaveAsTrigger()));
-
-    // Edit Menu actions
-    connect(ui->actionCopy, SIGNAL(triggered()),
-            this,SLOT(on_actionCopyTrigger()));
-    connect(ui->actionCut, SIGNAL(triggered()),
-            this,SLOT(on_actionCutTrigger()));
-    connect(ui->actionPaste, SIGNAL(triggered()),
-            this,SLOT(on_actionPasteTrigger()));
-
-    ui->actionSave->setDisabled(true);
-
-    // ToolBar actions
-    connect(ui->actionSelection_rect, SIGNAL(triggered()),
-            this,SLOT(on_actionSelectRectTrigger()));
-    connect(ui->actionPencil, SIGNAL(triggered()),
-            this,SLOT(on_actionPencilTrigger()));
-    connect(ui->actionRectangle, SIGNAL(triggered()),
-            this,SLOT(on_actionRectangleTrigger()));
-    connect(ui->actionEllipse, SIGNAL(triggered()),
-            this,SLOT(on_actionEllipseTrigger()));
-    connect(ui->actionFill, SIGNAL(triggered()),
-            this,SLOT(on_actionFillTrigger()));
 
 
     nbToolbarActions = 0;
@@ -91,6 +62,42 @@ MainWindow::MainWindow(QWidget *parent)
 
     connect(editarea, &EditArea::showStatusMessage,
             ui->statusbar, &QStatusBar::showMessage);
+    connect(sprites, &Sprites::showStatusMessage,
+            ui->statusbar, &QStatusBar::showMessage);
+
+
+    // File Menu actions
+    connect(ui->actionNew, SIGNAL(triggered()),
+            this,SLOT(on_actionNewTrigger()));
+    connect(ui->actionOpen, SIGNAL(triggered()),
+            sprites,SLOT(onLoadCurrentSprite()));
+    connect(ui->actionSave, SIGNAL(triggered()),
+            sprites,SLOT(onSaveCurrentSprite()));
+    connect(ui->actionSave_As, SIGNAL(triggered()),
+            sprites,SLOT(onSaveAsCurrentSprite()));
+
+    // Edit Menu actions
+    connect(ui->actionCopy, SIGNAL(triggered()),
+            this,SLOT(on_actionCopyTrigger()));
+    connect(ui->actionCut, SIGNAL(triggered()),
+            this,SLOT(on_actionCutTrigger()));
+    connect(ui->actionPaste, SIGNAL(triggered()),
+            this,SLOT(on_actionPasteTrigger()));
+
+    ui->actionSave->setDisabled(true);
+
+    // ToolBar actions
+    connect(ui->actionSelection_rect, SIGNAL(triggered()),
+            this,SLOT(on_actionSelectRectTrigger()));
+    connect(ui->actionPencil, SIGNAL(triggered()),
+            this,SLOT(on_actionPencilTrigger()));
+    connect(ui->actionRectangle, SIGNAL(triggered()),
+            this,SLOT(on_actionRectangleTrigger()));
+    connect(ui->actionEllipse, SIGNAL(triggered()),
+            this,SLOT(on_actionEllipseTrigger()));
+    connect(ui->actionFill, SIGNAL(triggered()),
+            this,SLOT(on_actionFillTrigger()));
+
 
 
     on_actionPencilTrigger();
@@ -128,45 +135,6 @@ void MainWindow::on_actionNewTrigger()
 {
     sprites->newCurrentSprite();
 
-}
-
-void MainWindow::on_actionOpenTrigger()
-{
-    qDebug() << "Load current sprite image";
-    // Open the file dialog
-    QString fileName = QFileDialog::getOpenFileName(
-        this,                           // Parent widget
-        tr("Open Document"),            // Dialog window title
-        ".",         // Starting directory
-        tr("png (*.png);;All Files (*.*)") // File filters
-        );
-
-    // Check if the user selected a file or cancelled
-    if (!fileName.isEmpty()) {
-        qDebug() << "Selected file path:" << fileName;
-        // Proceed with reading the file...
-        sprites->loadCurrentSprite(fileName);
-
-        statusBar()->showMessage("Image loaded ...");
-
-    } else {
-        qDebug() << "File selection cancelled.";
-    }
-
-}
-
-void MainWindow::on_actionSaveTrigger()
-{
-    qDebug() << "Save current sprite image";
-    sprites->SaveCurrentSprite();
-    statusBar()->showMessage("Image saved");
-
-}
-
-void MainWindow::on_actionSaveAsTrigger()
-{
-    qDebug() << "Save as current sprite image";
-    sprites->SaveAsCurrentSprite();
 }
 
 void MainWindow::on_actionCopyTrigger()

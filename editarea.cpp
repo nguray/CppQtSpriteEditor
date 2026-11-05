@@ -92,6 +92,7 @@ void EditArea::mousePressEvent(QMouseEvent *event)
     if (event->button() == Qt::MiddleButton){
         // Store Starting position for computing canvas translation when mouse is moved
         lastMousePos = event->position();
+        setCursor(Qt::SizeAllCursor);
 
     }else if (EditMode::fControlKey){
         QPointF canvasPos = EditMode::canvasInverseTransform.map(event->position());
@@ -137,10 +138,19 @@ void EditArea::mouseMoveEvent(QMouseEvent *event)
             // Compute canvas translation
             EditMode::canvasTranslation += event->position() - lastMousePos;
             lastMousePos = event->position();
+            setCursor(Qt::SizeAllCursor);
             update();
         }
     }else if (EditMode::fControlKey){
-        setCursor(pipetteCursor);
+        QPointF canvasPos = EditMode::canvasInverseTransform.map(event->position());
+        auto pt = canvasPos.toPoint();
+        auto pix = EditMode::Pos2Pixel(pt);
+        QRect r = EditMode::image->rect();
+        if (r.contains(pix)){
+            setCursor(pipetteCursor);
+        }else{
+            unsetCursor();
+        }
     }else{
         if (curEditMode->mouseMoveEvent(event)){
             update();
@@ -152,8 +162,6 @@ void EditArea::mouseMoveEvent(QMouseEvent *event)
         if (cursor().shape()!=curEditMode->mouseCursor.shape()){
             setCursor(curEditMode->mouseCursor);
         }
-
-
     }
 
 }
@@ -164,6 +172,7 @@ void EditArea::mouseReleaseEvent(QMouseEvent *event)
 
     if (event->button() == Qt::MiddleButton){
         //
+        unsetCursor();
     }else if (EditMode::fControlKey){
         setCursor(pipetteCursor);
     }else{
@@ -281,7 +290,6 @@ void EditArea::drawGrid(QPainter *painter)
         for (int j=0;j<=EditMode::image->size().width();j++){
             x = xLeft + j * EditMode::cellSize;
             y = yTop + i * EditMode::cellSize;
-
             painter->drawPoint(QPoint(x,y));
         }
     }
@@ -469,7 +477,6 @@ void EditArea::doCutRectangle()
     r = EditMode::selectRect->getPixRect();
     r.adjust(0,0,1,1);
     painter.fillRect(r,EditMode::backgroundColor);
-    //painter.setCompositionMode(QPainter::CompositionMode_SourceOver);
     curEditMode->init();
 }
 

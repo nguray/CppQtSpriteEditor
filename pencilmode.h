@@ -15,6 +15,7 @@ public:
 
     void freePolygon();
     void drawPolygon();
+    void drawVertex(QPainter *painter, PixelRect *v);
     void drawPolygonVertices(QPainter *painter);
     PixelRect *hitVertex(QPoint pt);
 

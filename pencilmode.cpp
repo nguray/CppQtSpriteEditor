@@ -157,7 +157,7 @@ bool PencilMode::mouseMoveEvent(QMouseEvent *event)
 
         QRect r = image->rect();
 
-        if (r.contains(pix)){ // Keep movement inside image limits
+        if (r.contains(pix)){ // Keep movement inside image limitsQPoint pix
             if (fShiftKey){
                 if (selVertex){
                     // Move selected vertex
@@ -210,26 +210,30 @@ bool PencilMode::mouseReleaseEvent(QMouseEvent *event)
     return false;
 }
 
+void PencilMode::drawVertex(QPainter *painter, PixelRect *v)
+{
+    auto r = Pixel2Rect(v->pix);
+    v->setRect(r.left(),r.top(),cellSize,cellSize);
+
+    painter->setBrush(QBrush(foregroundColor));
+
+    painter->setPen(QPen(vertexHandleColor1, 1.0, Qt::SolidLine, Qt::RoundCap,
+                         Qt::RoundJoin));
+    painter->drawRect(r);
+
+    r.adjust(2,2,-2,-2);
+    painter->setPen(QPen(vertexHandleColor2, 1.0, Qt::SolidLine, Qt::RoundCap,
+                         Qt::RoundJoin));
+    painter->drawRect(r);
+
+}
+
 
 void PencilMode::drawPolygonVertices(QPainter *painter)
 {
     int xLeft,yTop;
     for (auto v : polygon){
-
-        auto r = Pixel2Rect(v->pix);
-        v->setRect(r.left(),r.top(),cellSize,cellSize);
-
-        painter->setBrush(QBrush(foregroundColor));
-
-        painter->setPen(QPen(vertexHandleColor1, 1.0, Qt::SolidLine, Qt::RoundCap,
-                             Qt::RoundJoin));
-        painter->drawRect(r);
-
-        r.adjust(2,2,-2,-2);
-        painter->setPen(QPen(vertexHandleColor2, 1.0, Qt::SolidLine, Qt::RoundCap,
-                             Qt::RoundJoin));
-        painter->drawRect(r);
-
+        drawVertex(painter, v);
     }
 
 }
@@ -241,7 +245,11 @@ void PencilMode::paintEvent(QPaintEvent *event, QPainter *painter)
     //}
 
     if (fShiftKey){
-        drawPolygonVertices(painter);
+        if (polygon.size()==0){
+            drawVertex(painter,&lastPixel);
+        }else{
+            drawPolygonVertices(painter);
+        }
 
     }
 

@@ -23,25 +23,27 @@ public:
     explicit Sprites(QWidget *parent = nullptr);
     ~Sprites();
 
+
     void newSprite(int w, int h);
 
     void newCurrentSprite();
     void loadCurrentSprite(QString fileName);
-    void SaveCurrentSprite();
-    void SaveAsCurrentSprite();
 
 
 public slots:
     void on_imageChanged();
+    void onLoadCurrentSprite();
+    void onSaveCurrentSprite();
+    void onSaveAsCurrentSprite();
 
 private slots:
-    void loadImageTriggered();
     void newImageTriggered();
 
 signals:
     void spriteChanged(QSharedPointer<SpriteImage> spr);
     void enableSave(bool fEnableSave);
     void fileNameChanged(QString fileName);
+    void showStatusMessage(const QString &message, int timeout = 0);
 
 
 protected:

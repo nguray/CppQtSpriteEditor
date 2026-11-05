@@ -25,9 +25,6 @@ public slots:
 
 private slots:
     void on_actionNewTrigger();
-    void on_actionOpenTrigger();
-    void on_actionSaveTrigger();
-    void on_actionSaveAsTrigger();
     void on_actionCopyTrigger();
     void on_actionCutTrigger();
     void on_actionPasteTrigger();
