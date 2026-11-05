@@ -7,5 +7,6 @@
         <file>icons/rectangle_select.png</file>
         <file>icons/pipette.png</file>
         <file>icons/FloodFillIcon.png</file>
+        <file>icons/FloodFill.png</file>
     </qresource>
 </RCC>

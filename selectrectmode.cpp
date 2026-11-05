@@ -1,4 +1,5 @@
 #include "selectrectmode.h"
+#include <QCursor>
 
 SelectRectMode::SelectRectMode()
 {
@@ -12,7 +13,7 @@ SelectRectMode::~SelectRectMode()
 
 void SelectRectMode::init()
 {
-    mousePointer = Qt::ArrowCursor;
+    mouseCursor = QCursor(Qt::ArrowCursor);
     selectRect->setPixNULL();
     selectRect->setRect(0,0,0,0);
     selectRect->fDefined = false;
@@ -142,11 +143,11 @@ bool SelectRectMode::mouseMoveEvent(QMouseEvent *event)
     }else{
 
         if (auto c = selectRect->hitCorner(pt)){
-            mousePointer = c->cursorShape;
+            mouseCursor = QCursor(c->cursorShape);
         }else if (selectRect->contains(pt)){
-            mousePointer = Qt::SizeAllCursor;
+            mouseCursor = QCursor(Qt::SizeAllCursor);
         }else{
-            mousePointer = Qt::ArrowCursor;
+            mouseCursor = QCursor(Qt::ArrowCursor);
         }
 
     }
@@ -163,7 +164,7 @@ bool SelectRectMode::mouseReleaseEvent(QMouseEvent *event)
         selectRect->fDefined = !selectRect->isPixNULL();
     }
     fDoNotDrawHandles = false;
-    mousePointer = Qt::ArrowCursor;
+    mouseCursor = QCursor(Qt::ArrowCursor);
     return true;
 }
 

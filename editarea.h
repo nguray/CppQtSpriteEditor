@@ -17,6 +17,7 @@
 #include "ellipsemode.h"
 #include "selectrectmode.h"
 #include "pastemode.h"
+#include "fillmode.h"
 #include "spriteimage.h"
 
 
@@ -93,5 +94,5 @@ private:
     EllipseMode     *ellipseMode;
     SelectRectMode  *selectRectMode;
     PasteMode       *pasteMode;
-
+    FillMode        *fillMode;
 };

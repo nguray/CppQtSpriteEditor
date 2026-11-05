@@ -29,6 +29,7 @@ qt_add_executable(SpriteEditor
     qcolorpicker.cpp qcolorpicker_slider.cpp qcolorpicker_slider.h qcolorpicker.h
     selectrectmode.h selectrectmode.cpp
     pastemode.h pastemode.cpp
+    fillmode.h fillmode.cpp
 )
 
 target_link_libraries(SpriteEditor

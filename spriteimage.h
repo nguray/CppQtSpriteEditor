@@ -14,7 +14,7 @@ public:
     int     cellSize  = 5;
     float   zoomFactor=1.0f;
     QPointF zoomCenter;
-    QPointF origin;
+    QPointF canvasTranslation;
 
 };
 

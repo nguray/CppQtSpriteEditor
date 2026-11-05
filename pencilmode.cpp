@@ -29,7 +29,7 @@ void PencilMode::freePolygon()
 void PencilMode::init()
 {
     lastPixDraw = QPoint(0,0);
-    mousePointer = Qt::ArrowCursor;
+    mouseCursor = QCursor(Qt::ArrowCursor);
     lastPixel = QPoint();
     freePolygon();
 
@@ -59,6 +59,8 @@ void PencilMode::drawPolygon()
     QPoint prev;
 
     QPainter painter(EditMode::image.get());
+    painter.setCompositionMode(QPainter::CompositionMode_Source);
+
     painter.setPen(QPen(EditMode::foregroundColor, 1.0, Qt::SolidLine, Qt::RoundCap,
                     Qt::RoundJoin));
 
@@ -177,9 +179,9 @@ bool PencilMode::mouseMoveEvent(QMouseEvent *event)
     }else{
 
         if ((fShiftKey)&&(hitVertex(pt))){
-            mousePointer = Qt::SizeAllCursor;
+            mouseCursor = QCursor(Qt::SizeAllCursor);
         }else{
-            mousePointer = Qt::ArrowCursor;
+            mouseCursor = QCursor(Qt::ArrowCursor);
         }
     }
 

@@ -21,6 +21,7 @@ EditArea::EditArea(QWidget *parent)
     ellipseMode = new EllipseMode();
     selectRectMode = new SelectRectMode();
     pasteMode = new PasteMode();
+    fillMode = new FillMode();
 
     setPencilMode();
 
@@ -28,7 +29,7 @@ EditArea::EditArea(QWidget *parent)
     connect(m_timer, &QTimer::timeout, this, &EditArea::toggleFlash);
 
 
-    pipettePixmap = QPixmap("://icons/pipette.png");
+    pipettePixmap = QPixmap(":/icons/pipette.png");
     pipetteCursor = QCursor(pipettePixmap, 4, 26);
 
     EditMode::canvasTransform.reset();
@@ -42,6 +43,7 @@ EditArea::~EditArea()
     if (ellipseMode) delete ellipseMode;
     if (selectRectMode) delete selectRectMode;
     if (pasteMode) delete pasteMode;
+    if (fillMode) delete fillMode;
 
 }
 
@@ -92,7 +94,8 @@ void EditArea::mousePressEvent(QMouseEvent *event)
         lastMousePos = event->position();
 
     }else if (EditMode::fControlKey){
-        auto pt = event->position().toPoint();
+        QPointF canvasPos = EditMode::canvasInverseTransform.map(event->position());
+        auto pt = canvasPos.toPoint();
         auto [fOk, c] = EditMode::getPixelColor(pt);
         if (fOk){
             EditMode::foregroundColor = c;
@@ -106,8 +109,8 @@ void EditArea::mousePressEvent(QMouseEvent *event)
             updateSaveMenuItem();
         }
         // Change EditArea widget cursor if required
-        if (cursor().shape()!=curEditMode->mousePointer){
-            setCursor(curEditMode->mousePointer);
+        if (cursor().shape()!=curEditMode->mouseCursor.shape()){
+            setCursor(curEditMode->mouseCursor);
         }
     }
 
@@ -132,7 +135,7 @@ void EditArea::mouseMoveEvent(QMouseEvent *event)
         // Check whether the mouse cursor is within the widget
         if (rect().contains(event->position().toPoint())){
             // Compute canvas translation
-            EditMode::origin += event->position() - lastMousePos;
+            EditMode::canvasTranslation += event->position() - lastMousePos;
             lastMousePos = event->position();
             update();
         }
@@ -146,9 +149,11 @@ void EditArea::mouseMoveEvent(QMouseEvent *event)
         }
 
         // Change EditArea widget cursor if required
-        if (cursor().shape()!=curEditMode->mousePointer){
-            setCursor(curEditMode->mousePointer);
+        if (cursor().shape()!=curEditMode->mouseCursor.shape()){
+            setCursor(curEditMode->mouseCursor);
         }
+
+
     }
 
 }
@@ -166,8 +171,8 @@ void EditArea::mouseReleaseEvent(QMouseEvent *event)
             update();
         }
         // Change EditArea widget cursor if required
-        if (cursor().shape()!=curEditMode->mousePointer){
-            setCursor(curEditMode->mousePointer);
+        if (cursor().shape()!=curEditMode->mouseCursor.shape()){
+            setCursor(curEditMode->mouseCursor);
         }
     }
 }
@@ -255,8 +260,8 @@ void EditArea::initZoomPan(QSize canvasSize, QSize imageSize)
 
     auto w = EditMode::cellSize*imageSize.width();
     auto h = EditMode::cellSize*imageSize.height();
-    EditMode::origin.setX(canvasSize.width()/2.0f - w/2.0f);
-    EditMode::origin.setY(canvasSize.height()/2.0f - h/2.0f);
+    EditMode::canvasTranslation.setX(canvasSize.width()/2.0f - w/2.0f);
+    EditMode::canvasTranslation.setY(canvasSize.height()/2.0f - h/2.0f);
 
     EditMode::zoomCenter.setX(w/2.0f);
     EditMode::zoomCenter.setY(h/2.0f);
@@ -291,17 +296,18 @@ void EditArea::paintEvent(QPaintEvent *event)
     QRect r = event->rect();
     painter.fillRect(r,QColor(220,220,204));
 
-    //-- Canvas Zoom Pan settings of the edit image
-
-    EditMode::image->canvasSize = size(); // Store canvas size to trigger init Zoom Pan
+    //-- Canvas Zoom Pan settings use to paint
+    // Store canvas size to trigger init Zoom Pan when get anpther image from Sprites widget if needed
+    EditMode::image->canvasSize = size();
     EditMode::image->cellSize   = EditMode::cellSize;
     EditMode::image->zoomFactor = EditMode::zoomFactor;
-    EditMode::image->origin     = EditMode::origin;
+    EditMode::image->canvasTranslation     = EditMode::canvasTranslation;
     EditMode::image->zoomCenter = EditMode::zoomCenter;
 
     painter.save();
+
     EditMode::canvasTransform.reset();
-    EditMode::canvasTransform.translate(EditMode::origin.x(),EditMode::origin.y());
+    EditMode::canvasTransform.translate(EditMode::canvasTranslation.x(),EditMode::canvasTranslation.y());
 
 
     EditMode::canvasTransform.translate(EditMode::zoomCenter.x(), EditMode::zoomCenter.y());
@@ -425,14 +431,14 @@ void EditArea::setNewSpriteImage(QSharedPointer<SpriteImage> newImage)
         initZoomPan(size(), newImage->size());
         newImage->cellSize   = EditMode::cellSize;
         newImage->zoomFactor = EditMode::zoomFactor;
-        newImage->origin     = EditMode::origin;
+        newImage->canvasTranslation     = EditMode::canvasTranslation;
         newImage->zoomCenter = EditMode::zoomCenter;
 
     }else{
 
         EditMode::cellSize = newImage->cellSize;
         EditMode::zoomFactor = newImage->zoomFactor;
-        EditMode::origin = newImage->origin;
+        EditMode::canvasTranslation = newImage->canvasTranslation;
         EditMode::zoomCenter = newImage->zoomCenter;
 
     }
@@ -513,6 +519,9 @@ void EditArea::setPasteMode()
 
 void EditArea::setFillMode()
 {
+    curEditMode = fillMode;
+    curEditMode->init();
+    update();
 
 }
 

@@ -14,13 +14,11 @@ int EditMode::cellSize = 10;
 
 float EditMode::zoomFactor = 1.0f;
 QPointF EditMode::zoomCenter = QPointF();
-QPointF EditMode::origin = QPointF(0.0f,0.0f);
+QPointF EditMode::canvasTranslation = QPointF(0.0f,0.0f);
 
 
 QTransform EditMode::canvasTransform = QTransform();
 QTransform EditMode::canvasInverseTransform = QTransform();
-
-Qt::CursorShape EditMode::mousePointer = Qt::ArrowCursor;
 
 SelectRect  *EditMode::selectRect = nullptr;
 

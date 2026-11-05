@@ -7,6 +7,7 @@
 #include <QPainter>
 #include <QMouseEvent>
 #include <QPaintEvent>
+#include <QCursor>
 #include "spriteimage.h"
 #include "selectrect.h"
 
@@ -21,14 +22,15 @@ public:
     static QSharedPointer<SpriteImage> image;
     static QImage image_cpy;
     static QImage image_bak;
-    static Qt::CursorShape mousePointer;
+
+    QCursor mouseCursor;
 
     static  SelectRect  *selectRect;
 
     static int cellSize;
     static float zoomFactor;
     static QPointF zoomCenter;
-    static QPointF origin;
+    static QPointF canvasTranslation;
 
     static bool fShiftKey;
     static bool fControlKey;

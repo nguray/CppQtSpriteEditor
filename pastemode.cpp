@@ -8,6 +8,7 @@
 \*--------------------------------------------------------------*/
 
 #include "pastemode.h"
+#include <QCursor>
 
 PasteMode::PasteMode() {}
 
@@ -28,7 +29,7 @@ void PasteMode::pasteImage()
 
 void PasteMode::init()
 {
-    mousePointer = Qt::ArrowCursor;
+    mouseCursor = QCursor(Qt::ArrowCursor);
     int cpy_w = image_cpy.size().width();
     int cpy_h = image_cpy.size().height();
 
@@ -119,11 +120,11 @@ bool PasteMode::mouseMoveEvent(QMouseEvent *event)
     }else{
 
         if (auto c = selectRect->hitCorner(pt)){
-            mousePointer = c->cursorShape;
+            mouseCursor = QCursor(c->cursorShape);
         }else if (selectRect->contains(pt)){
-            mousePointer = Qt::SizeAllCursor;
+            mouseCursor = QCursor(Qt::SizeAllCursor);
         }else{
-            mousePointer = Qt::ArrowCursor;
+            mouseCursor = QCursor(Qt::ArrowCursor);
         }
 
     }
@@ -139,7 +140,7 @@ bool PasteMode::mouseReleaseEvent(QMouseEvent *event)
         selCorner = NULL;
     }
     fDoNotDrawHandles = false;
-    mousePointer = Qt::ArrowCursor;
+    mouseCursor = QCursor(Qt::ArrowCursor);
     return true;
 }
 
